@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APUSH People — Complete Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0c09;
+    --surface: #171410;
+    --border: #2a2520;
+    --accent: #c8963a;
+    --accent2: #7fb5d4;
+    --text: #e8e0d4;
+    --muted: #7a6f62;
+    --tag-bg: #1e1a15;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2rem 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg);
+    backdrop-filter: blur(10px);
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  h1 span { color: var(--text); }
+  .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.08em;
+  }
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  #search {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    width: 280px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: var(--muted); }
+  .era-filters {
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+  }
+  .era-btn {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.3rem 0.7rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+  .era-btn:hover, .era-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+  #count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  main {
+    padding: 1.5rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .era-section { margin-bottom: 3rem; }
+  .era-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent2);
+    border-left: 3px solid var(--accent2);
+    padding-left: 0.75rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+  .card {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+    transition: background 0.15s;
+  }
+  .card:hover { background: #1c1814; }
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .card-dates {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #c4b9ab;
+    line-height: 1.55;
+  }
+  .card-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    margin-top: 0.4rem;
+    margin-right: 3px;
+    text-transform: uppercase;
+  }
+  .hidden { display: none !important; }
+  .no-results {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    padding: 3rem;
+    text-align: center;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>APUSH <span>People</span></h1>
+  <div class="subtitle">// COMPLETE REFERENCE — EVERY FIGURE IN U.S. HISTORY</div>
+  <div class="controls">
+    <input id="search" type="text" placeholder="Search name or keyword...">
+    <div class="era-filters" id="era-filters"></div>
+    <span id="count"></span>
+  </div>
+</header>
+<main id="main"></main>
+
+<script>
+const data = [
+  // ── COLONIAL ERA ──────────────────────────────────────────────────────────
+  { name:"John Smith", dates:"1580–1631", era:"Colonial", tags:["explorer","leader"],
+    desc:"English soldier and explorer who helped establish Jamestown in 1607, the first permanent English settlement in North America. His leadership and insistence that colonists work to eat arguably saved the colony from collapse." },
+  { name:"Pocahontas (Amonute)", dates:"c.1596–1617", era:"Colonial", tags:["Native American","diplomat"],
+    desc:"Powhatan chief's daughter whose relationship with English colonists at Jamestown became legendary; later baptized and married John Rolfe, traveling to England where she died." },
+  { name:"John Rolfe", dates:"1585–1622", era:"Colonial", tags:["entrepreneur"],
+    desc:"Pioneered the cultivation of tobacco in Virginia, creating the cash crop that made the Chesapeake colonies economically viable." },
+  { name:"Powhatan (Wahunsenaca)", dates:"c.1547–1618", era:"Colonial", tags:["Native American","leader"],
+    desc:"Paramount chief of the Powhatan Confederacy who controlled much of tidewater Virginia; initially maintained ambiguous relations with English settlers at Jamestown." },
+  { name:"Anne Hutchinson", dates:"1591–1643", era:"Colonial", tags:["religious","women"],
+    desc:"Puritan religious leader in Massachusetts Bay Colony who challenged clerical authority by holding home meetings where she reinterpreted sermons. Banished in 1638 for antinomianism, she fled to Rhode Island and later New York, where she was killed in a Native American raid." },
+  { name:"Roger Williams", dates:"1603–1683", era:"Colonial", tags:["religious","leader"],
+    desc:"Puritan minister banished from Massachusetts Bay for advocating separation of church and state and fair treatment of Native Americans. Founded Providence, Rhode Island in 1636, establishing one of the earliest experiments in religious toleration in the Americas." },
+  { name:"John Winthrop", dates:"1588–1649", era:"Colonial", tags:["leader","Puritan"],
+    desc:"First governor of Massachusetts Bay Colony and dominant Puritan leader of early New England. His 'city upon a hill' vision defined Puritan New England's sense of divine mission and shaped American exceptionalism as a concept." },
+  { name:"William Penn", dates:"1644–1718", era:"Colonial", tags:["Quaker","founder"],
+    desc:"Quaker leader who founded Pennsylvania in 1681 as a 'holy experiment' in religious tolerance. Maintained notably peaceful relations with the Lenape people and established Philadelphia as a planned city and commercial hub." },
+  { name:"Peter Stuyvesant", dates:"1612–1672", era:"Colonial", tags:["leader"],
+    desc:"Last Dutch Director-General of New Netherland who reluctantly surrendered the colony to England in 1664; known for his peg leg and authoritarian rule." },
+  { name:"Nathaniel Bacon", dates:"1647–1676", era:"Colonial", tags:["rebel"],
+    desc:"Led Bacon's Rebellion in 1676, an armed uprising of frontier settlers, servants, and formerly enslaved people against Virginia's Governor Berkeley. Though crushed, it alarmed planters and accelerated the shift toward African slavery over indentured servitude." },
+  { name:"William Berkeley", dates:"1605–1677", era:"Colonial", tags:["governor"],
+    desc:"Royal Governor of Virginia whose favoritism toward the tidewater elite and refusal to protect frontier settlers sparked Bacon's Rebellion." },
+  { name:"Metacom (King Philip)", dates:"c.1638–1676", era:"Colonial", tags:["Native American","leader"],
+    desc:"Wampanoag leader who organized King Philip's War (1675–76), the most devastating colonial conflict in New England proportionally, killing thousands on both sides before his death ended Native resistance in the region." },
+  { name:"Cotton Mather", dates:"1663–1728", era:"Colonial", tags:["religious","Puritan"],
+    desc:"Influential Puritan minister whose writings on witchcraft contributed to the Salem Witch Trials hysteria; also wrote on science and promoted smallpox inoculation." },
+  { name:"Samuel Parris", dates:"1653–1720", era:"Colonial", tags:["religious"],
+    desc:"Puritan minister whose Salem Village congregation was the epicenter of the 1692 Salem Witch Trials hysteria." },
+  { name:"Tituba", dates:"c.1650s–?", era:"Colonial", tags:["enslaved"],
+    desc:"Enslaved woman in Salem whose confession of witchcraft helped ignite the Salem Witch Trials hysteria of 1692." },
+  { name:"John Peter Zenger", dates:"1697–1746", era:"Colonial", tags:["press","free speech"],
+    desc:"German-born printer whose 1735 acquittal on seditious libel charges established an early precedent for freedom of the press and truth as a defense against libel." },
+  { name:"Olaudah Equiano", dates:"c.1745–1797", era:"Colonial", tags:["abolitionist","enslaved"],
+    desc:"Formerly enslaved African whose 1789 autobiography became a landmark abolitionist text, graphically depicting the Middle Passage and arguing for the humanity of enslaved people." },
+  { name:"Eliza Lucas Pinckney", dates:"1722–1793", era:"Colonial", tags:["women","entrepreneur"],
+    desc:"Pioneered indigo cultivation in South Carolina in the 1740s, creating a profitable export crop that transformed the colony's economy." },
+  { name:"Pontiac", dates:"c.1720–1769", era:"Colonial", tags:["Native American","leader"],
+    desc:"Ottawa war leader who organized Pontiac's Rebellion (1763) against British forts in the Great Lakes region following the French and Indian War, leading to the Proclamation of 1763." },
+  { name:"James Oglethorpe", dates:"1696–1785", era:"Colonial", tags:["founder"],
+    desc:"Founded the colony of Georgia in 1733 as a haven for debtors and a buffer against Spanish Florida; banned slavery in Georgia initially." },
+  { name:"Jonathan Edwards", dates:"1703–1758", era:"Colonial", tags:["religious"],
+    desc:"Puritan theologian and revivalist preacher whose hellfire sermons like 'Sinners in the Hands of an Angry God' ignited the First Great Awakening of the 1730s–40s." },
+  { name:"George Whitefield", dates:"1714–1770", era:"Colonial", tags:["religious"],
+    desc:"Charismatic itinerant British minister who toured the colonies multiple times, drawing massive crowds and catalyzing the First Great Awakening across denominational lines." },
+  { name:"John Locke", dates:"1632–1704", era:"Colonial", tags:["philosopher"],
+    desc:"English philosopher whose ideas on natural rights, consent of the governed, and social contract theory directly influenced the Declaration of Independence and American founding ideology." },
+
+  // ── REVOLUTIONARY ERA ──────────────────────────────────────────────────────
+  { name:"George Washington", dates:"1732–1799", era:"Revolution", tags:["Founding Father","president","military"],
+    desc:"Commander-in-Chief of the Continental Army during the Revolutionary War, presiding over key victories at Trenton and Yorktown. As the first President (1789–97), he established foundational precedents — two-term limit, cabinet government, neutrality in foreign affairs — and is widely called the 'Father of His Country.'" },
+  { name:"John Adams", dates:"1735–1826", era:"Revolution", tags:["Founding Father","president"],
+    desc:"Boston lawyer, delegate to the Continental Congress, and advocate for independence who helped negotiate the Treaty of Paris (1783). As second President, he navigated the XYZ Affair, signed the Alien and Sedition Acts, and kept the nation out of full-scale war with France despite immense pressure from his own party." },
+  { name:"Thomas Jefferson", dates:"1743–1826", era:"Revolution", tags:["Founding Father","president"],
+    desc:"Principal author of the Declaration of Independence and architect of Virginia's Statute for Religious Freedom. As third President, he completed the Louisiana Purchase (1803), doubling the nation's size, and oversaw the Lewis and Clark Expedition — all while paradoxically enslaving over 600 people throughout his lifetime." },
+  { name:"Benjamin Franklin", dates:"1706–1790", era:"Revolution", tags:["Founding Father","diplomat","scientist"],
+    desc:"Printer, scientist, author, inventor, and diplomat who secured the French alliance critical to American victory in the Revolution. He helped draft the Declaration of Independence, the Constitution, and the Treaty of Paris — making him the only Founder to sign all four of the nation's key founding documents." },
+  { name:"Alexander Hamilton", dates:"1755–1804", era:"Revolution", tags:["Founding Father","economist"],
+    desc:"Washington's aide-de-camp, co-author of The Federalist Papers, and first Secretary of the Treasury. His financial program — national bank, assumption of state debts, excise taxes, protective tariffs — created America's capitalist economic foundation and established the Federalist vision of a strong national government." },
+  { name:"James Madison", dates:"1751–1836", era:"Revolution", tags:["Founding Father","president"],
+    desc:"'Father of the Constitution' who drafted the Virginia Plan, shepherded the Bill of Rights through Congress, and co-authored The Federalist Papers. As fourth President, he led the nation through the War of 1812, earning mixed reviews for the burning of Washington and eventual negotiated peace." },
+  { name:"Patrick Henry", dates:"1736–1799", era:"Revolution", tags:["orator","patriot"],
+    desc:"Virginia orator whose 'Give me liberty or give me death!' speech galvanized colonial resistance. A leading Anti-Federalist, he opposed ratification of the Constitution for lacking a Bill of Rights." },
+  { name:"Samuel Adams", dates:"1722–1803", era:"Revolution", tags:["patriot","organizer"],
+    desc:"Boston agitator and master political organizer who founded the Sons of Liberty, helped organize the Boston Tea Party, and kept colonial resistance networks alive through the Committees of Correspondence." },
+  { name:"John Hancock", dates:"1737–1793", era:"Revolution", tags:["patriot","merchant"],
+    desc:"Wealthy Boston merchant and president of the Continental Congress whose oversized signature on the Declaration of Independence became iconic; later served as Governor of Massachusetts." },
+  { name:"Paul Revere", dates:"1735–1818", era:"Revolution", tags:["patriot","artisan"],
+    desc:"Boston silversmith who rode to warn colonial militiamen of British troop movements before the Battles of Lexington and Concord; also participated in the Boston Tea Party." },
+  { name:"Thomas Paine", dates:"1737–1809", era:"Revolution", tags:["writer","patriot"],
+    desc:"Radical English-American pamphleteer whose 'Common Sense' (1776) made the case for complete independence in plain language accessible to ordinary colonists, and whose 'The Crisis' papers sustained morale during the darkest days of the war." },
+  { name:"Benedict Arnold", dates:"1741–1801", era:"Revolution", tags:["military","traitor"],
+    desc:"Brilliant Continental Army general whose victories at Fort Ticonderoga and Saratoga were crucial to the Revolution, but who later defected to the British in 1780, becoming history's most famous American traitor." },
+  { name:"Marquis de Lafayette", dates:"1757–1834", era:"Revolution", tags:["military","French"],
+    desc:"French aristocrat and general who volunteered to serve Washington without pay, becoming one of his most trusted commanders and helping secure French military support for the American cause." },
+  { name:"Baron von Steuben", dates:"1730–1794", era:"Revolution", tags:["military","Prussian"],
+    desc:"Prussian military officer who drilled and trained the Continental Army at Valley Forge, transforming ragged troops into a disciplined fighting force." },
+  { name:"Abigail Adams", dates:"1744–1818", era:"Revolution", tags:["women","Founding Mother"],
+    desc:"Wife of John Adams whose 'Remember the Ladies' letter urged the Founders to include women's rights in the new laws; one of the most intellectually influential women of the founding era, often serving as her husband's closest political advisor." },
+  { name:"Mercy Otis Warren", dates:"1728–1814", era:"Revolution", tags:["women","writer"],
+    desc:"Patriot playwright and satirist whose anti-British plays helped mobilize colonial opinion; later wrote a major three-volume history of the American Revolution." },
+  { name:"Ethan Allen", dates:"1738–1789", era:"Revolution", tags:["military","leader"],
+    desc:"Led the Green Mountain Boys in the capture of Fort Ticonderoga (1775), providing the Continental Army with badly needed artillery." },
+  { name:"Charles Cornwallis", dates:"1738–1805", era:"Revolution", tags:["British","military"],
+    desc:"British general whose surrender at Yorktown in October 1781 effectively ended the Revolutionary War." },
+  { name:"King George III", dates:"1738–1820", era:"Revolution", tags:["British","monarch"],
+    desc:"British king whose policies — Stamp Act, Intolerable Acts, refusal to address colonial grievances — are blamed in the Declaration of Independence for tyranny, though Parliament drove most colonial policy." },
+  { name:"Crispus Attucks", dates:"c.1723–1770", era:"Revolution", tags:["patriot","Black American"],
+    desc:"Mixed-race dockworker who was the first person killed in the Boston Massacre (1770), becoming an early martyr of the patriot cause." },
+  { name:"Phillis Wheatley", dates:"c.1753–1784", era:"Revolution", tags:["poet","enslaved","Black American"],
+    desc:"Enslaved African-born woman who became the first Black American to publish a book of poetry (1773), corresponding with George Washington and using her work to argue for both American freedom and the abolition of slavery." },
+  { name:"James Armistead Lafayette", dates:"c.1748–1830", era:"Revolution", tags:["spy","Black American","enslaved"],
+    desc:"Enslaved Black American who served as a double agent for the Continental Army, feeding British General Cornwallis false information in the lead-up to Yorktown." },
+  { name:"Haym Salomon", dates:"1740–1785", era:"Revolution", tags:["financier"],
+    desc:"Polish-Jewish broker who helped finance the Continental Army by raising funds in Europe and personally lending large sums to government officials." },
+  { name:"John Jay", dates:"1745–1829", era:"Revolution", tags:["Founding Father","diplomat"],
+    desc:"Co-author of The Federalist Papers, lead negotiator of the Treaty of Paris, and first Chief Justice of the Supreme Court." },
+
+  // ── EARLY REPUBLIC ────────────────────────────────────────────────────────
+  { name:"John Marshall", dates:"1755–1835", era:"Early Republic", tags:["judiciary","Federalist"],
+    desc:"Fourth and longest-serving Chief Justice of the Supreme Court, whose landmark decisions — Marbury v. Madison (judicial review), McCulloch v. Maryland (implied powers), Gibbons v. Ogden (commerce clause) — established the judiciary as a co-equal branch and expanded federal power. No figure did more to shape constitutional law." },
+  { name:"Aaron Burr", dates:"1756–1836", era:"Early Republic", tags:["politician","VP"],
+    desc:"Third Vice President who killed Alexander Hamilton in an 1804 duel; later tried for treason for an alleged scheme to carve out a western empire, though acquitted." },
+  { name:"Toussaint Louverture", dates:"1743–1803", era:"Early Republic", tags:["leader","revolution","Black American"],
+    desc:"Leader of the Haitian Revolution, whose success in defeating Napoleon's forces contributed to France selling Louisiana, doubling U.S. territory. The revolution also frightened American slaveholders and tightened slavery restrictions." },
+  { name:"Meriwether Lewis", dates:"1774–1809", era:"Early Republic", tags:["explorer"],
+    desc:"Led the Corps of Discovery (1804–06) with William Clark, mapping Louisiana Territory, establishing U.S. claims to the Pacific Northwest, and returning with invaluable scientific and geographic data." },
+  { name:"William Clark", dates:"1770–1838", era:"Early Republic", tags:["explorer"],
+    desc:"Co-led the Lewis and Clark Expedition and later served as Superintendent of Indian Affairs, overseeing early U.S. policy toward Great Plains tribes." },
+  { name:"Sacagawea", dates:"c.1788–1812", era:"Early Republic", tags:["Native American","explorer"],
+    desc:"Shoshone woman who served as interpreter and guide for the Lewis and Clark Expedition; her presence signaled peaceful intentions and helped the Corps navigate Western tribes." },
+  { name:"Tecumseh", dates:"1768–1813", era:"Early Republic", tags:["Native American","leader"],
+    desc:"Shawnee leader who forged a pan-tribal confederacy to resist American westward expansion, allying with the British during the War of 1812. His death at the Battle of the Thames (1813) ended the most significant Native resistance movement east of the Mississippi." },
+  { name:"Tenskwatawa (The Prophet)", dates:"1775–1836", era:"Early Republic", tags:["Native American","religious"],
+    desc:"Shawnee religious leader and Tecumseh's brother who preached cultural revivalism and rejection of American ways, helping build the confederacy at Prophetstown." },
+  { name:"Andrew Jackson", dates:"1767–1845", era:"Early Republic", tags:["president","military"],
+    desc:"Hero of the Battle of New Orleans (1815), seventh President (1829–37), and founder of the Democratic Party. His presidency reshaped democracy — expanding white male suffrage, destroying the Second Bank, and institutionalizing the spoils system — while also enacting the devastating Indian Removal Act and Trail of Tears." },
+  { name:"John C. Calhoun", dates:"1782–1850", era:"Early Republic", tags:["politician","states rights"],
+    desc:"South Carolina senator, Secretary of War, and Vice President whose doctrine of nullification — states' right to void federal law — nearly broke the Union in 1832 and provided theoretical foundation for secession in 1861." },
+  { name:"Henry Clay", dates:"1777–1852", era:"Early Republic", tags:["politician","Whig"],
+    desc:"'The Great Compromiser' whose Missouri Compromise (1820), Compromise Tariff (1833), and Compromise of 1850 delayed the Civil War for decades. Advocate of the 'American System' — protective tariffs, national bank, internal improvements." },
+  { name:"Daniel Webster", dates:"1782–1852", era:"Early Republic", tags:["orator","politician"],
+    desc:"Massachusetts senator and towering orator who championed nationalism and the Union above sectional interests; argued many landmark Supreme Court cases." },
+  { name:"James Monroe", dates:"1758–1831", era:"Early Republic", tags:["president"],
+    desc:"Fifth President whose 'Era of Good Feelings' masked growing sectional tensions; issued the Monroe Doctrine (1823) declaring the Western Hemisphere closed to further European colonization." },
+  { name:"DeWitt Clinton", dates:"1769–1828", era:"Early Republic", tags:["politician","infrastructure"],
+    desc:"Governor of New York who championed and oversaw construction of the Erie Canal (1825), transforming commerce in the Northeast and making New York City the nation's leading port." },
+  { name:"Sequoyah", dates:"c.1770–1843", era:"Early Republic", tags:["Native American","intellectual"],
+    desc:"Cherokee polymath who single-handedly created a syllabary for the Cherokee language, enabling widespread literacy among his people within years of its introduction." },
+  { name:"John Quincy Adams", dates:"1767–1848", era:"Early Republic", tags:["president","diplomat"],
+    desc:"Sixth President and brilliant diplomat who co-authored the Monroe Doctrine; after his presidency, served in Congress as a fierce anti-slavery advocate and successfully argued the Amistad case." },
+  { name:"Noah Webster", dates:"1758–1843", era:"Early Republic", tags:["intellectual","education"],
+    desc:"Authored the first American dictionary and standardized American spelling, contributing to a distinct national cultural identity." },
+  { name:"Francis Scott Key", dates:"1779–1843", era:"Early Republic", tags:["poet"],
+    desc:"Wrote 'The Star-Spangled Banner' after witnessing the British bombardment of Fort McHenry during the War of 1812." },
+  { name:"Oliver Hazard Perry", dates:"1785–1819", era:"Early Republic", tags:["military","naval"],
+    desc:"Won the decisive Battle of Lake Erie (1813) during the War of 1812, famously reporting 'We have met the enemy and they are ours.'" },
+  { name:"Winfield Scott", dates:"1786–1866", era:"Early Republic", tags:["military"],
+    desc:"Oversaw the forced removal of the Cherokee — the Trail of Tears — and later commanded in the Mexican-American War and the early Civil War." },
+
+  // ── ANTEBELLUM & REFORM ──────────────────────────────────────────────────
+  { name:"Frederick Douglass", dates:"1818–1895", era:"Antebellum", tags:["abolitionist","orator","Black American"],
+    desc:"Escaped enslaved man whose autobiography became the most powerful antislavery text of the 19th century. A magnetic orator, editor of the North Star newspaper, and advisor to Lincoln, Douglass pushed the nation toward emancipation and later championed Reconstruction and women's suffrage, making him the most influential Black American leader of the century." },
+  { name:"Harriet Tubman", dates:"c.1822–1913", era:"Antebellum", tags:["abolitionist","activist","Black American","women"],
+    desc:"Escaped enslaved woman who made 13 missions back into slave territory as a 'conductor' on the Underground Railroad, rescuing approximately 70 people. During the Civil War she served as a spy, scout, and nurse for the Union Army, leading the Combahee River Raid that freed 700 enslaved people." },
+  { name:"William Lloyd Garrison", dates:"1805–1879", era:"Antebellum", tags:["abolitionist"],
+    desc:"Radical white abolitionist who founded The Liberator newspaper and the American Anti-Slavery Society, demanding immediate, unconditional emancipation. His uncompromising rhetoric — burning the Constitution as a 'covenant with death' — alienated moderates but defined the moral stakes of the slavery debate." },
+  { name:"Harriet Beecher Stowe", dates:"1811–1896", era:"Antebellum", tags:["writer","abolitionist","women"],
+    desc:"Author of 'Uncle Tom's Cabin' (1852), the bestselling novel that humanized enslaved people for Northern white readers and inflamed antislavery sentiment. Lincoln reportedly called her 'the little woman who wrote the book that started this great war.'" },
+  { name:"Sojourner Truth", dates:"c.1797–1883", era:"Antebellum", tags:["abolitionist","women's rights","Black American"],
+    desc:"Formerly enslaved woman who became a powerful itinerant preacher, abolitionist, and women's rights advocate. Her 1851 'Ain't I a Woman?' speech at the Ohio Women's Rights Convention forced the movement to grapple with the intersection of race and gender." },
+  { name:"John Brown", dates:"1800–1859", era:"Antebellum", tags:["abolitionist","radical"],
+    desc:"Radical white abolitionist who believed God commanded him to use violence to end slavery. He led the Pottawatomie Massacre in Kansas (1856) and his 1859 raid on Harpers Ferry — aimed at sparking a slave rebellion — panicked the South and accelerated the road to secession." },
+  { name:"Nat Turner", dates:"1800–1831", era:"Antebellum", tags:["enslaved","rebellion","Black American"],
+    desc:"Enslaved Virginia preacher who led the most significant slave rebellion in U.S. history in 1831, killing 55 white people before being captured and executed. The rebellion led to brutal reprisals and harsher slave codes across the South." },
+  { name:"Denmark Vesey", dates:"c.1767–1822", era:"Antebellum", tags:["activist","Black American"],
+    desc:"Free Black carpenter who planned a large slave rebellion in Charleston, SC (1822); the plot was betrayed before it began, and Vesey was executed." },
+  { name:"Gabriel Prosser", dates:"c.1776–1800", era:"Antebellum", tags:["enslaved","rebellion","Black American"],
+    desc:"Enslaved blacksmith who planned a large-scale slave revolt near Richmond, Virginia in 1800; betrayed before the uprising could begin and executed." },
+  { name:"Elizabeth Cady Stanton", dates:"1815–1902", era:"Antebellum", tags:["women's rights","activist"],
+    desc:"Primary organizer of the Seneca Falls Convention (1848) and author of the 'Declaration of Sentiments' which demanded equal rights for women including suffrage. Co-founded the National Woman Suffrage Association with Susan B. Anthony and wrote 'The Woman's Bible,' making her the intellectual architect of the women's rights movement." },
+  { name:"Susan B. Anthony", dates:"1820–1906", era:"Antebellum", tags:["women's rights","activist"],
+    desc:"Tireless organizer of the suffrage movement who was famously arrested for voting in 1872. She co-founded the National Woman Suffrage Association, collected thousands of petition signatures, and built the organizational infrastructure that led to the 19th Amendment — ratified 14 years after her death." },
+  { name:"Lucretia Mott", dates:"1793–1880", era:"Antebellum", tags:["women's rights","abolitionist"],
+    desc:"Quaker abolitionist and women's rights activist who co-organized the Seneca Falls Convention (1848) with Elizabeth Cady Stanton after being excluded from an antislavery conference in London." },
+  { name:"Dorothea Dix", dates:"1802–1887", era:"Antebellum", tags:["reformer","women"],
+    desc:"Mental health reformer who investigated appalling conditions in prisons and almshouses and successfully lobbied state legislatures to build 32 mental hospitals; served as Superintendent of Army Nurses during the Civil War." },
+  { name:"Horace Mann", dates:"1796–1859", era:"Antebellum", tags:["education","reformer"],
+    desc:"Secretary of the Massachusetts Board of Education who established the first state-funded teacher training schools and promoted free public education, earning the title 'Father of American Education.'" },
+  { name:"Ralph Waldo Emerson", dates:"1803–1882", era:"Antebellum", tags:["intellectual","Transcendentalist"],
+    desc:"Philosopher, essayist, and poet who founded the Transcendentalist movement, emphasizing individualism, self-reliance, and the divinity of nature; his essays profoundly influenced American intellectual life and reform movements." },
+  { name:"Henry David Thoreau", dates:"1817–1862", era:"Antebellum", tags:["intellectual","activist","Transcendentalist"],
+    desc:"Author of 'Walden' and 'Civil Disobedience,' who argued that individuals must refuse to comply with unjust laws. His theories of nonviolent resistance directly influenced Gandhi and Martin Luther King Jr." },
+  { name:"Alexis de Tocqueville", dates:"1805–1859", era:"Antebellum", tags:["intellectual","French"],
+    desc:"French political thinker whose 'Democracy in America' (1835) offered the most penetrating early analysis of American democracy, warning of the 'tyranny of the majority.'" },
+  { name:"James K. Polk", dates:"1795–1849", era:"Antebellum", tags:["president"],
+    desc:"Eleventh President who achieved all his expansionist goals — annexed Texas, settled the Oregon boundary, and won the Mexican-American War — acquiring California and the Southwest, but his acquisitions reignited the slavery crisis." },
+  { name:"Zachary Taylor", dates:"1784–1850", era:"Antebellum", tags:["president","military"],
+    desc:"War hero of the Mexican-American War who became twelfth President; died after 16 months in office, succeeded by Millard Fillmore who signed the Compromise of 1850." },
+  { name:"Millard Fillmore", dates:"1800–1874", era:"Antebellum", tags:["president"],
+    desc:"Thirteenth President who signed the Compromise of 1850 including the controversial Fugitive Slave Act, angering Northern abolitionists." },
+  { name:"Franklin Pierce", dates:"1804–1869", era:"Antebellum", tags:["president"],
+    desc:"Fourteenth President who signed the Kansas-Nebraska Act (1854), repealing the Missouri Compromise and reigniting sectional conflict over slavery's expansion." },
+  { name:"James Buchanan", dates:"1791–1868", era:"Antebellum", tags:["president"],
+    desc:"Fifteenth President widely considered one of the worst in U.S. history for his passive response to Southern secession, believing it unconstitutional but also believing the federal government lacked authority to prevent it." },
+  { name:"Stephen Douglas", dates:"1813–1861", era:"Antebellum", tags:["politician","Democrat"],
+    desc:"Illinois senator who authored the Kansas-Nebraska Act, championed 'popular sovereignty,' and debated Lincoln in the famous 1858 Lincoln-Douglas debates; the Democratic Party split over his nomination in 1860, enabling Lincoln's election." },
+  { name:"Roger Taney", dates:"1777–1864", era:"Antebellum", tags:["judiciary"],
+    desc:"Chief Justice who wrote the disastrous Dred Scott v. Sandford decision (1857), ruling that Black Americans could never be citizens and that Congress had no power to restrict slavery in territories, inflaming sectional tensions." },
+  { name:"Dred Scott", dates:"c.1799–1858", era:"Antebellum", tags:["enslaved","Black American"],
+    desc:"Enslaved man who sued for his freedom on the grounds that he had lived in free territories; the Supreme Court's ruling against him in 1857 became one of the most consequential and reviled decisions in judicial history." },
+  { name:"Sam Houston", dates:"1793–1863", era:"Antebellum", tags:["leader","Texas"],
+    desc:"Hero of the Texas Revolution, first President of the Republic of Texas, and later senator and governor; one of only two governors in U.S. history to be removed from office for refusing to swear loyalty to the Confederacy." },
+  { name:"Antonio López de Santa Anna", dates:"1794–1876", era:"Antebellum", tags:["Mexican","leader"],
+    desc:"Mexican general and president whose defeat of the Alamo and eventual loss at San Jacinto defined the Texas Revolution and Mexican-American conflict." },
+  { name:"Joseph Smith", dates:"1805–1844", era:"Antebellum", tags:["religious"],
+    desc:"Founded the Church of Jesus Christ of Latter-day Saints (Mormons) in 1830; his religious claims and practice of polygamy led to his lynching in Illinois, after which Brigham Young led followers to Utah." },
+  { name:"Brigham Young", dates:"1801–1877", era:"Antebellum", tags:["religious","leader"],
+    desc:"Led the Mormon migration to the Salt Lake Valley in 1847 and governed the Utah Territory; built a thriving community in the desert Southwest." },
+  { name:"P.T. Barnum", dates:"1810–1891", era:"Antebellum", tags:["entrepreneur","entertainer"],
+    desc:"Showman and entrepreneur who pioneered mass entertainment through museums, hoaxes, and eventually the 'Greatest Show on Earth' circus; embodied antebellum American hucksterism." },
+  { name:"Samuel Morse", dates:"1791–1872", era:"Antebellum", tags:["inventor"],
+    desc:"Invented the electromagnetic telegraph and Morse code, revolutionizing long-distance communication and shrinking the effective size of the United States." },
+  { name:"Eli Whitney", dates:"1765–1825", era:"Antebellum", tags:["inventor","entrepreneur"],
+    desc:"Invented the cotton gin (1793), which exponentially increased cotton production, dramatically expanded slavery in the Deep South, and ultimately pushed the nation toward Civil War; also pioneered interchangeable parts in manufacturing." },
+  { name:"Cyrus McCormick", dates:"1809–1884", era:"Antebellum", tags:["inventor","entrepreneur"],
+    desc:"Invented the mechanical reaper, revolutionizing grain harvesting and enabling vast expansion of Midwestern wheat farming." },
+  { name:"John Deere", dates:"1804–1886", era:"Antebellum", tags:["inventor","entrepreneur"],
+    desc:"Invented the self-scouring steel plow that could break Midwestern prairie sod, opening the Great Plains to mass agriculture." },
+
+  // ── CIVIL WAR ────────────────────────────────────────────────────────────
+  { name:"Abraham Lincoln", dates:"1809–1865", era:"Civil War", tags:["president","leader"],
+    desc:"Sixteenth President who led the nation through its greatest crisis. Issued the Emancipation Proclamation (1863), transforming the Civil War into a war for human freedom. His Gettysburg Address redefined the nation's founding ideals. Re-elected in 1864 and proposing a magnanimous Reconstruction in his Second Inaugural, he was assassinated by John Wilkes Booth five days after Lee's surrender." },
+  { name:"Jefferson Davis", dates:"1808–1889", era:"Civil War", tags:["Confederate","president"],
+    desc:"President of the Confederate States of America throughout the Civil War; former U.S. Senator from Mississippi and Secretary of War. His rigid personality, conflicts with Confederate governors over states' rights, and inability to create a unified Southern nationalism contributed to the Confederacy's defeat." },
+  { name:"Ulysses S. Grant", dates:"1822–1885", era:"Civil War", tags:["military","president"],
+    desc:"Union general whose tenacious battlefield strategy — grinding attrition at Vicksburg, the Overland Campaign, and the Siege of Petersburg — brought the Confederacy to its knees. As eighteenth President, he championed Reconstruction and civil rights but his administration was plagued by corruption scandals." },
+  { name:"William Tecumseh Sherman", dates:"1820–1891", era:"Civil War", tags:["military"],
+    desc:"Union general who pioneered 'total war' with his March to the Sea (1864), destroying Confederate infrastructure and civilian morale across Georgia, hastening the war's end." },
+  { name:"Robert E. Lee", dates:"1807–1870", era:"Civil War", tags:["Confederate","military"],
+    desc:"Commander of the Confederate Army of Northern Virginia whose tactical brilliance at Fredericksburg and Chancellorsville made him a formidable foe, though his aggressive strategy depleted Confederate manpower. Surrendered to Grant at Appomattox Court House, April 9, 1865." },
+  { name:"Stonewall Jackson", dates:"1824–1863", era:"Civil War", tags:["Confederate","military"],
+    desc:"Confederate general celebrated for his lightning-fast flanking maneuvers in the Shenandoah Valley Campaign and at Chancellorsville; accidentally shot by his own troops and died, a major blow to Confederate fortunes." },
+  { name:"George McClellan", dates:"1826–1885", era:"Civil War", tags:["military","Union"],
+    desc:"First commander of the Union Army of the Potomac whose excessive caution and poor execution frustrated Lincoln; ran against Lincoln as the Democratic peace candidate in 1864." },
+  { name:"Frederick Law Olmsted", dates:"1822–1903", era:"Civil War", tags:["reformer","designer"],
+    desc:"Landscape architect who designed Central Park and served as an executive secretary for the U.S. Sanitary Commission, organizing medical care for Union soldiers." },
+  { name:"Clara Barton", dates:"1821–1912", era:"Civil War", tags:["women","nurse","reformer"],
+    desc:"Known as the 'Angel of the Battlefield,' she organized medical supplies and nursing care on Civil War battlefields and later founded the American Red Cross." },
+  { name:"John Wilkes Booth", dates:"1838–1865", era:"Civil War", tags:["assassin"],
+    desc:"Confederate sympathizer and actor who assassinated President Lincoln at Ford's Theatre, April 14, 1865, throwing Reconstruction into crisis." },
+  { name:"Harriet Jacobs", dates:"1813–1897", era:"Civil War", tags:["enslaved","writer","Black American","women"],
+    desc:"Enslaved woman who hid in a crawlspace for seven years before escaping; her 1861 'Incidents in the Life of a Slave Girl' was the first autobiography by an enslaved Black woman." },
+  { name:"Mary Todd Lincoln", dates:"1818–1882", era:"Civil War", tags:["women","First Lady"],
+    desc:"Controversial First Lady whose Southern family connections and erratic behavior drew harsh public criticism even as she suffered profound personal losses, including the death of her son Willie in the White House." },
+  { name:"Thaddeus Stevens", dates:"1792–1868", era:"Civil War", tags:["politician","Radical Republican"],
+    desc:"Radical Republican congressman who drove Reconstruction legislation and the 14th Amendment; believed the South must be treated as a conquered province and transformed from the ground up." },
+  { name:"Charles Sumner", dates:"1811–1874", era:"Civil War", tags:["politician","Radical Republican"],
+    desc:"Massachusetts senator whose antislavery 'Crime Against Kansas' speech prompted Representative Preston Brooks to beat him unconscious with a cane on the Senate floor in 1856 — an image that galvanized Northern antislavery sentiment." },
+
+  // ── RECONSTRUCTION ───────────────────────────────────────────────────────
+  { name:"Andrew Johnson", dates:"1808–1875", era:"Reconstruction", tags:["president"],
+    desc:"Seventeenth President whose lenient Reconstruction plan restored Southern states quickly without protecting freedpeople. His vetoes of civil rights legislation and defiance of the Radical Republicans led to his impeachment by the House (1868) — the first presidential impeachment — though he survived removal by one Senate vote." },
+  { name:"Hiram Revels", dates:"1827–1901", era:"Reconstruction", tags:["politician","Black American"],
+    desc:"First Black U.S. Senator, representing Mississippi in 1870–71; an AME minister who also served as president of Alcorn State University." },
+  { name:"Blanche Bruce", dates:"1841–1898", era:"Reconstruction", tags:["politician","Black American"],
+    desc:"First Black American to serve a full term in the U.S. Senate (1875–1881), representing Mississippi." },
+  { name:"Pinckney Pinchback", dates:"1837–1921", era:"Reconstruction", tags:["politician","Black American"],
+    desc:"First Black governor in U.S. history, serving briefly as acting governor of Louisiana in 1872–73." },
+  { name:"Josephine St. Pierre Ruffin", dates:"1842–1924", era:"Reconstruction", tags:["activist","Black American","women"],
+    desc:"Founded the Woman's Era Club, first civic organization for Black women in Boston, and helped organize the National Association of Colored Women." },
+  { name:"Susie King Taylor", dates:"1848–1912", era:"Reconstruction", tags:["nurse","Black American","women"],
+    desc:"Formerly enslaved woman who served as a nurse and teacher for the first Black regiment in the Union Army; wrote the only memoir by a Black woman about the Civil War." },
+
+  // ── GILDED AGE ───────────────────────────────────────────────────────────
+  { name:"John D. Rockefeller", dates:"1839–1937", era:"Gilded Age", tags:["entrepreneur","monopolist"],
+    desc:"Founded Standard Oil in 1870 and used horizontal integration, predatory pricing, and secret railroad rebates to control 90% of U.S. oil refining by 1882. His trust became the defining example of monopoly power and the primary target of antitrust regulation; he died the world's wealthiest person and a major philanthropist." },
+  { name:"Andrew Carnegie", dates:"1835–1919", era:"Gilded Age", tags:["entrepreneur","industrialist"],
+    desc:"Scottish immigrant who dominated the American steel industry through vertical integration and ruthless cost-cutting. His Carnegie Steel Company was sold to J.P. Morgan in 1901 for $480 million, making Carnegie the world's richest man; he then gave away nearly his entire fortune, articulating 'The Gospel of Wealth' that obligated the rich to give back." },
+  { name:"J.P. Morgan", dates:"1837–1913", era:"Gilded Age", tags:["financier","banker"],
+    desc:"America's most powerful banker who organized the financing of railroads and corporations, effectively bailing out the U.S. Treasury during the Panic of 1893 and creating U.S. Steel (the first billion-dollar corporation) in 1901; his power to stabilize or destabilize the economy convinced Congress to create the Federal Reserve." },
+  { name:"Cornelius Vanderbilt", dates:"1794–1877", era:"Gilded Age", tags:["entrepreneur","railroad"],
+    desc:"Built a steamship and railroad empire, consolidating the New York Central Railroad and accumulating a fortune that made him the wealthiest American of his era." },
+  { name:"Jay Gould", dates:"1836–1892", era:"Gilded Age", tags:["financier","railroad"],
+    desc:"Robber baron who manipulated railroad stocks and attempted to corner the gold market in the Black Friday panic of 1869, personifying the era's financial skullduggery." },
+  { name:"Thomas Edison", dates:"1847–1931", era:"Gilded Age", tags:["inventor","entrepreneur"],
+    desc:"Prolific inventor with over 1,000 patents, including the phonograph, practical incandescent light bulb, and motion picture camera. His Menlo Park laboratory pioneered the concept of organized industrial research and development." },
+  { name:"Nikola Tesla", dates:"1856–1943", era:"Gilded Age", tags:["inventor","scientist"],
+    desc:"Serbian-American inventor whose alternating current (AC) system, developed partly in competition with Edison's DC, became the global standard for electrical power transmission." },
+  { name:"Alexander Graham Bell", dates:"1847–1922", era:"Gilded Age", tags:["inventor"],
+    desc:"Inventor of the telephone (1876), which revolutionized communication and launched one of America's earliest major corporations." },
+  { name:"Mark Twain (Samuel Clemens)", dates:"1835–1910", era:"Gilded Age", tags:["writer","intellectual"],
+    desc:"Novelist and satirist who coined the term 'Gilded Age' and authored 'Adventures of Huckleberry Finn,' America's quintessential novel exploring race, freedom, and identity. His sharp social commentary exposed the era's corruption and hypocrisy." },
+  { name:"Ida Tarbell", dates:"1857–1944", era:"Gilded Age", tags:["journalist","muckraker","women"],
+    desc:"Investigative journalist whose 19-part series on Standard Oil (1902–04) in McClure's Magazine documented Rockefeller's illegal practices in exhaustive detail, ultimately leading to the Supreme Court-ordered breakup of Standard Oil in 1911." },
+  { name:"Jacob Riis", dates:"1849–1914", era:"Gilded Age", tags:["journalist","reformer"],
+    desc:"Danish-American photojournalist whose 'How the Other Half Lives' (1890) exposed tenement conditions in New York City with shocking photographs, galvanizing Progressive Era housing reform." },
+  { name:"Jane Addams", dates:"1860–1935", era:"Gilded Age", tags:["reformer","women","settlement house"],
+    desc:"Founded Hull House in Chicago (1889), pioneering the settlement house movement that provided education, childcare, and social services to immigrant communities. A leading Progressive Era reformer and pacifist who co-founded the ACLU and won the Nobel Peace Prize in 1931." },
+  { name:"Florence Kelley", dates:"1859–1932", era:"Gilded Age", tags:["reformer","women","labor"],
+    desc:"Resident of Hull House who successfully lobbied for Illinois factory inspection laws and an 8-hour workday for women; became chief factory inspector and later led the National Consumers League." },
+  { name:"Ida B. Wells", dates:"1862–1931", era:"Gilded Age", tags:["journalist","activist","Black American","women"],
+    desc:"Formerly enslaved woman who became a crusading journalist documenting lynching with statistical rigor in 'Southern Horrors' (1892). She co-founded the NAACP, organized Black women's clubs, and fought tirelessly against racial violence despite constant death threats." },
+  { name:"Booker T. Washington", dates:"1856–1915", era:"Gilded Age", tags:["educator","leader","Black American"],
+    desc:"Founded Tuskegee Institute and became the most influential Black leader of the late 19th century by advocating 'accommodationism' — Black economic self-improvement through vocational training rather than immediate civil rights agitation. His 1895 Atlanta Compromise speech accepted social segregation in exchange for economic opportunity, earning white patronage but drawing fierce criticism from W.E.B. Du Bois." },
+  { name:"W.E.B. Du Bois", dates:"1868–1963", era:"Gilded Age", tags:["intellectual","activist","Black American"],
+    desc:"First Black American to earn a PhD from Harvard, Du Bois challenged Washington's accommodationism, arguing in 'The Souls of Black Folk' (1903) for the 'Talented Tenth' — higher education for Black leaders who would demand full civil rights. Co-founded the NAACP in 1909 and edited The Crisis magazine for decades, profoundly shaping 20th-century civil rights thinking." },
+  { name:"Samuel Gompers", dates:"1850–1924", era:"Gilded Age", tags:["labor","organizer"],
+    desc:"Founded and led the American Federation of Labor (AFL), championing 'bread and butter' unionism focused on wages, hours, and working conditions rather than socialism; dominated the American labor movement for four decades." },
+  { name:"Eugene V. Debs", dates:"1855–1926", era:"Gilded Age", tags:["labor","socialist"],
+    desc:"Led the Pullman Strike (1894), was imprisoned under the Sherman Antitrust Act, and ran for president five times as a Socialist — once from prison in 1920 — receiving nearly a million votes; symbolized the radical labor movement." },
+  { name:"Mary Harris 'Mother' Jones", dates:"1837–1930", era:"Gilded Age", tags:["labor","activist","women"],
+    desc:"Irish-born union organizer who spent decades in mining camps and textile mills mobilizing workers; called 'the most dangerous woman in America' for her confrontational tactics, including leading a children's march to Theodore Roosevelt's home." },
+  { name:"Chief Joseph (Hinmahtooyahlatkekt)", dates:"1840–1904", era:"Gilded Age", tags:["Native American","leader"],
+    desc:"Nez Perce leader who led a tactical military retreat of 1,170 miles through the Rockies (1877) before being forced to surrender just 40 miles from the Canadian border; his surrender speech became one of history's most moving statements." },
+  { name:"Sitting Bull (Tatanka-Iyotanka)", dates:"c.1831–1890", era:"Gilded Age", tags:["Native American","leader"],
+    desc:"Hunkpapa Lakota holy man and war chief who led resistance to U.S. expansion, oversaw the defeat of Custer at Little Bighorn (1876), and was later killed during the Ghost Dance movement." },
+  { name:"Crazy Horse (Tȟašúŋke Witkó)", dates:"c.1840–1877", era:"Gilded Age", tags:["Native American","military"],
+    desc:"Oglala Lakota war leader who played a central role in the Battle of Little Bighorn and other engagements; murdered after surrendering at Fort Robinson in 1877." },
+  { name:"George Armstrong Custer", dates:"1839–1876", era:"Gilded Age", tags:["military"],
+    desc:"U.S. Army officer whose catastrophic defeat at Little Bighorn (1876) by combined Sioux and Cheyenne forces became the most famous Native American victory against the U.S. military." },
+  { name:"Geronimo (Goyaałé)", dates:"1829–1909", era:"Gilded Age", tags:["Native American","leader"],
+    desc:"Apache leader who resisted U.S. and Mexican expansion for decades, evading capture in the Southwest borderlands until his final surrender in 1886." },
+  { name:"Red Cloud (Maȟpíya Lúta)", dates:"1822–1909", era:"Gilded Age", tags:["Native American","leader"],
+    desc:"Oglala Lakota war leader who won Red Cloud's War (1866–68), forcing the U.S. to abandon Bozeman Trail forts — the only war the U.S. ever lost to Native Americans outright." },
+  { name:"Helen Hunt Jackson", dates:"1830–1885", era:"Gilded Age", tags:["writer","activist"],
+    desc:"Wrote 'A Century of Dishonor' (1881) documenting federal treaty violations against Native Americans, and the novel 'Ramona,' both galvanizing public sympathy for Native Americans." },
+  { name:"Grover Cleveland", dates:"1837–1908", era:"Gilded Age", tags:["president"],
+    desc:"Only president to serve two non-consecutive terms (22nd and 24th); known for vetoing excessive pensions and opposing tariff protection; signed the Dawes Act but vetoed bills aiding farmers." },
+  { name:"Rutherford B. Hayes", dates:"1822–1893", era:"Gilded Age", tags:["president"],
+    desc:"Nineteenth President whose contested 1876 election led to the Compromise of 1877, ending Reconstruction by withdrawing federal troops from the South." },
+  { name:"James Garfield", dates:"1831–1881", era:"Gilded Age", tags:["president"],
+    desc:"Twentieth President who served only 200 days before being assassinated, his death spurring civil service reform through the Pendleton Civil Service Reform Act." },
+  { name:"Chester Arthur", dates:"1829–1886", era:"Gilded Age", tags:["president"],
+    desc:"Twenty-first President who surprisingly signed the Pendleton Civil Service Act (1883), reforming patronage despite being a product of machine politics." },
+  { name:"Benjamin Harrison", dates:"1833–1901", era:"Gilded Age", tags:["president"],
+    desc:"Twenty-third President during whose term the Sherman Antitrust Act and McKinley Tariff were passed, and six states were admitted to the Union." },
+  { name:"William McKinley", dates:"1843–1901", era:"Gilded Age", tags:["president"],
+    desc:"Twenty-fifth President who led the U.S. into the Spanish-American War (1898), acquiring Guam, Puerto Rico, and the Philippines; assassinated in 1901, succeeded by Theodore Roosevelt." },
+  { name:"William Jennings Bryan", dates:"1860–1925", era:"Gilded Age", tags:["politician","orator"],
+    desc:"Three-time Democratic presidential candidate whose 'Cross of Gold' speech electrified the 1896 convention, championing silver coinage for debtors against gold-standard creditors; personified agrarian populism and later prosecuted John Scopes in the Scopes Trial." },
+  { name:"Terence Powderly", dates:"1849–1924", era:"Gilded Age", tags:["labor","organizer"],
+    desc:"Led the Knights of Labor, the first major industrial union organizing skilled and unskilled workers including women and Black Americans in the 1880s." },
+  { name:"Henry George", dates:"1839–1897", era:"Gilded Age", tags:["economist","reformer"],
+    desc:"Political economist whose 'Progress and Poverty' (1879) proposed the 'single tax' on land to eliminate poverty; enormously influential in Progressive Era reform debates." },
+  { name:"Edward Bellamy", dates:"1850–1898", era:"Gilded Age", tags:["writer","reformer"],
+    desc:"Wrote 'Looking Backward' (1888), a utopian novel envisioning a socialist America, which inspired hundreds of Nationalist Clubs and influenced the Progressive Era." },
+  { name:"William Randolph Hearst", dates:"1863–1951", era:"Gilded Age", tags:["media","entrepreneur"],
+    desc:"Newspaper magnate who pioneered yellow journalism, allegedly helping drum up public support for the Spanish-American War with sensationalist coverage; his media empire shaped 20th-century American journalism." },
+  { name:"Joseph Pulitzer", dates:"1847–1911", era:"Gilded Age", tags:["media","entrepreneur"],
+    desc:"Hungarian-born newspaper publisher who competed with Hearst in yellow journalism but also pioneered investigative reporting; endowed the Pulitzer Prize." },
+  { name:"Leland Stanford", dates:"1824–1893", era:"Gilded Age", tags:["entrepreneur","railroad"],
+    desc:"Railroad magnate and California governor who helped build the transcontinental railroad; founded Stanford University in honor of his son." },
+  { name:"Frederick Winslow Taylor", dates:"1856–1915", era:"Gilded Age", tags:["engineer","management"],
+    desc:"Developed 'scientific management' (Taylorism) — systematic time-and-motion studies to maximize industrial efficiency, transforming factory management and labor relations." },
+
+  // ── PROGRESSIVE ERA ──────────────────────────────────────────────────────
+  { name:"Theodore Roosevelt", dates:"1858–1919", era:"Progressive Era", tags:["president","conservationist"],
+    desc:"Twenty-sixth President who redefined the presidency as an instrument of reform. Busted 44 trusts using the Sherman Antitrust Act, championed consumer protection (Pure Food and Drug Act, Meat Inspection Act), established 150 national forests and 5 national parks, and won the Nobel Peace Prize for mediating the Russo-Japanese War. His 'Square Deal' and 'bully pulpit' set the template for activist presidents." },
+  { name:"Woodrow Wilson", dates:"1856–1924", era:"Progressive Era", tags:["president"],
+    desc:"Twenty-eighth President who signed the Federal Reserve Act, Federal Trade Commission Act, and Clayton Antitrust Act in his 'New Freedom' program. Led the U.S. into WWI to 'make the world safe for democracy,' proposed the Fourteen Points and League of Nations, but suffered a stroke fighting for ratification of the Treaty of Versailles, which the Senate rejected. Personally a committed white supremacist who re-segregated the federal government." },
+  { name:"William Howard Taft", dates:"1857–1930", era:"Progressive Era", tags:["president","judiciary"],
+    desc:"Twenty-seventh President who actually busted more trusts than Roosevelt but is remembered as a conservative; split the Republican Party with Roosevelt in 1912. Later served as Chief Justice of the Supreme Court — the only person to hold both offices." },
+  { name:"Robert La Follette", dates:"1855–1925", era:"Progressive Era", tags:["politician","Progressive"],
+    desc:"Wisconsin governor and senator who pioneered direct democracy reforms — primary elections, initiative, referendum, recall — making Wisconsin a 'laboratory of democracy' for Progressive legislation." },
+  { name:"Upton Sinclair", dates:"1878–1968", era:"Progressive Era", tags:["writer","muckraker"],
+    desc:"Socialist author whose 'The Jungle' (1906) exposed horrific unsanitary conditions in Chicago meatpacking plants. Though Sinclair intended to highlight worker exploitation, public outrage over contaminated food led directly to the Pure Food and Drug Act." },
+  { name:"Lincoln Steffens", dates:"1866–1936", era:"Progressive Era", tags:["journalist","muckraker"],
+    desc:"Muckraking journalist whose 'The Shame of the Cities' series exposed political machine corruption in American cities, galvanizing Progressive Era municipal reform." },
+  { name:"John Muir", dates:"1838–1914", era:"Progressive Era", tags:["conservationist","writer"],
+    desc:"Scottish-American naturalist and writer who founded the Sierra Club and persuaded Theodore Roosevelt to protect millions of acres of wilderness; called the 'Father of the National Parks.'" },
+  { name:"Gifford Pinchot", dates:"1865–1946", era:"Progressive Era", tags:["conservationist"],
+    desc:"First Chief of the U.S. Forest Service who developed the philosophy of 'wise use' conservation — managing natural resources efficiently rather than preserving them untouched; clashed with preservationist John Muir." },
+  { name:"Victoria Woodhull", dates:"1838–1927", era:"Progressive Era", tags:["activist","women"],
+    desc:"First woman to run for U.S. president (1872), advocate of free love and women's suffrage, and first woman to address Congress on women's voting rights." },
+  { name:"Emma Goldman", dates:"1869–1940", era:"Progressive Era", tags:["anarchist","activist","women"],
+    desc:"Russian-born anarchist who advocated free love, birth control, labor rights, and anti-militarism with passionate speeches and the magazine Mother Earth; deported to Russia in 1919 during the Red Scare." },
+  { name:"Margaret Sanger", dates:"1879–1966", era:"Progressive Era", tags:["activist","women","birth control"],
+    desc:"Nurse who opened America's first birth control clinic (1916) and founded what became Planned Parenthood, fighting for women's reproductive autonomy; her association with eugenicist ideology complicates her legacy." },
+  { name:"W.C. Handy", dates:"1873–1958", era:"Progressive Era", tags:["musician","Black American"],
+    desc:"'Father of the Blues' who transcribed and published blues music, bringing the Southern Black musical tradition to mainstream American audiences." },
+  { name:"Scott Joplin", dates:"1868–1917", era:"Progressive Era", tags:["musician","Black American"],
+    desc:"'King of Ragtime' whose compositions like 'Maple Leaf Rag' made him the first Black American to achieve widespread recognition as a composer of serious American music." },
+  { name:"Louis Brandeis", dates:"1856–1941", era:"Progressive Era", tags:["judiciary","reformer"],
+    desc:"Progressive lawyer and first Jewish Supreme Court Justice, known for 'the Brandeis Brief' pioneering the use of social science evidence in law; championed workers' rights and opposed corporate concentration." },
+
+  // ── WWI ERA ──────────────────────────────────────────────────────────────
+  { name:"John J. Pershing", dates:"1860–1948", era:"WWI", tags:["military"],
+    desc:"Commander of the American Expeditionary Forces in World War I; previously led the punitive expedition against Pancho Villa in Mexico." },
+  { name:"Alvin York", dates:"1887–1964", era:"WWI", tags:["military"],
+    desc:"Tennessee sharpshooter who single-handedly captured 132 German soldiers in WWI, becoming one of the most decorated American soldiers of the war." },
+  { name:"Henry Cabot Lodge", dates:"1850–1924", era:"WWI", tags:["politician"],
+    desc:"Republican Senate Majority Leader whose opposition to the League of Nations treaty defeated U.S. entry, a pivotal moment in American foreign policy history." },
+  { name:"Pancho Villa", dates:"1878–1923", era:"WWI", tags:["Mexican","military"],
+    desc:"Mexican revolutionary leader whose 1916 raid on Columbus, New Mexico provoked the U.S. Punitive Expedition led by Pershing into Mexico." },
+  { name:"A. Mitchell Palmer", dates:"1872–1936", era:"WWI", tags:["politician"],
+    desc:"Attorney General who ordered the Palmer Raids (1919–20), mass arrests of suspected radicals and immigrants during the First Red Scare." },
+  { name:"Charles Schenck", dates:"1884–?", era:"WWI", tags:["activist"],
+    desc:"Socialist who distributed leaflets opposing the draft during WWI; the Supreme Court's Schenck v. United States ruling established the 'clear and present danger' test for free speech limitations." },
+
+  // ── 1920s ────────────────────────────────────────────────────────────────
+  { name:"Warren G. Harding", dates:"1865–1923", era:"1920s", tags:["president"],
+    desc:"Twenty-ninth President whose administration was engulfed in scandal — most notably the Teapot Dome oil bribery scandal — though Harding himself died before the worst was revealed." },
+  { name:"Calvin Coolidge", dates:"1872–1933", era:"1920s", tags:["president"],
+    desc:"Thirtieth President whose 'Silent Cal' persona embodied laissez-faire economic policy; his hands-off approach to business contributed to the speculation bubble that preceded the Great Depression." },
+  { name:"Herbert Hoover", dates:"1874–1964", era:"1920s", tags:["president"],
+    desc:"Thirty-first President who presided over the onset of the Great Depression; his faith in 'rugged individualism' and opposition to direct federal relief made him deeply unpopular as unemployment soared to 25%." },
+  { name:"Marcus Garvey", dates:"1887–1940", era:"1920s", tags:["activist","Black American","Pan-Africanism"],
+    desc:"Jamaican-born Black nationalist who founded the Universal Negro Improvement Association and the Black Star Line shipping company, championing Pan-Africanism and 'Back to Africa' as the path to Black liberation; his mass movement was the largest Black organization in U.S. history until the 1960s." },
+  { name:"Langston Hughes", dates:"1902–1967", era:"1920s", tags:["poet","Black American","Harlem Renaissance"],
+    desc:"Poet, playwright, and novelist who became the leading voice of the Harlem Renaissance, capturing Black life, jazz rhythms, and the Great Migration in works like 'The Weary Blues'; his poetry challenged both racism and middle-class Black respectability." },
+  { name:"Zora Neale Hurston", dates:"1891–1960", era:"1920s", tags:["writer","Black American","women","Harlem Renaissance"],
+    desc:"Harlem Renaissance novelist and anthropologist who celebrated Southern Black folk culture in 'Their Eyes Were Watching God' (1937); rediscovered by Alice Walker in the 1970s after dying in obscurity." },
+  { name:"Claude McKay", dates:"1889–1948", era:"1920s", tags:["poet","Black American","Harlem Renaissance"],
+    desc:"Jamaican-American poet whose sonnet 'If We Must Die' became a defining text of Black resistance during the Red Summer of 1919." },
+  { name:"Duke Ellington", dates:"1899–1974", era:"1920s", tags:["musician","Black American"],
+    desc:"Jazz composer, pianist, and bandleader who defined American big band jazz at Harlem's Cotton Club and composed over 1,000 works, including concert pieces that elevated jazz to an art form." },
+  { name:"Louis Armstrong", dates:"1901–1971", era:"1920s", tags:["musician","Black American"],
+    desc:"New Orleans-born trumpet virtuoso whose improvisational genius defined jazz and made it a global art form; his recordings with the Hot Five and Hot Seven in the 1920s are foundational texts of American music." },
+  { name:"Charles Lindbergh", dates:"1902–1974", era:"1920s", tags:["aviator"],
+    desc:"Made the first solo nonstop transatlantic flight (1927) in the Spirit of St. Louis, becoming America's greatest celebrity; his isolationist America First activism before WWII tarnished his legacy." },
+  { name:"Amelia Earhart", dates:"1897–1937", era:"1920s", tags:["aviator","women"],
+    desc:"First woman to fly solo across the Atlantic (1932) and a symbol of female possibility during an era of limited women's roles; disappeared over the Pacific during a round-the-world flight attempt." },
+  { name:"F. Scott Fitzgerald", dates:"1896–1940", era:"1920s", tags:["writer"],
+    desc:"Novelist who defined the Jazz Age with 'The Great Gatsby' (1925), exploring the American Dream's corruption beneath the glittering surface of 1920s prosperity and inequality." },
+  { name:"Ernest Hemingway", dates:"1899–1961", era:"1920s", tags:["writer"],
+    desc:"Spare-prose novelist of the 'Lost Generation' whose 'The Sun Also Rises' and 'A Farewell to Arms' captured WWI disillusionment and modern alienation." },
+  { name:"Henry Ford", dates:"1863–1947", era:"1920s", tags:["entrepreneur","industrialist"],
+    desc:"Pioneer of the assembly line and mass production who made the automobile affordable for ordinary Americans with the Model T; introduced the $5 work day and the 40-hour week to keep workers and reduce turnover; also a virulent antisemite whose writings influenced Adolf Hitler." },
+  { name:"Al Capone", dates:"1899–1947", era:"1920s", tags:["criminal"],
+    desc:"Chicago organized crime boss who dominated illegal liquor distribution during Prohibition, making bootlegging synonymous with the 1920s underworld." },
+  { name:"Clarence Darrow", dates:"1857–1938", era:"1920s", tags:["lawyer"],
+    desc:"Legendary defense attorney who defended Eugene Debs, the McNamara brothers, and Leopold and Loeb, and famously sparred with William Jennings Bryan in the Scopes Trial (1925)." },
+  { name:"Billy Sunday", dates:"1862–1935", era:"1920s", tags:["religious"],
+    desc:"Flamboyant evangelist and leading voice of Prohibition whose theatrical revival meetings drew massive crowds and helped pass the 18th Amendment." },
+
+  // ── NEW DEAL / GREAT DEPRESSION ──────────────────────────────────────────
+  { name:"Franklin D. Roosevelt", dates:"1882–1945", era:"New Deal", tags:["president","leader"],
+    desc:"Thirty-second President and the only to serve more than two terms (1933–45). His New Deal programs — Social Security, the FDIC, the SEC, the TVA, the NLRA — fundamentally restructured the relationship between the federal government and citizens, establishing the modern welfare state. He led the U.S. through most of World War II, building the Grand Alliance, overseeing the Manhattan Project, and shaping postwar institutions before dying weeks before Germany's surrender." },
+  { name:"Eleanor Roosevelt", dates:"1884–1962", era:"New Deal", tags:["First Lady","activist","women"],
+    desc:"Transformed the role of First Lady from ceremonial to activist. Championed civil rights, lobbied for anti-lynching legislation, resigned from the DAR when they barred Marian Anderson, and ensured New Deal programs reached women and Black Americans. As the first U.S. Representative to the UN, she helped draft the Universal Declaration of Human Rights (1948)." },
+  { name:"Harry Hopkins", dates:"1890–1946", era:"New Deal", tags:["administrator"],
+    desc:"FDR's closest aide who administered major New Deal relief programs (FERA, WPA) and served as Roosevelt's personal envoy to Churchill and Stalin during WWII." },
+  { name:"Frances Perkins", dates:"1880–1965", era:"New Deal", tags:["women","labor","government"],
+    desc:"First woman Cabinet member, serving as FDR's Secretary of Labor for all 12 years; the primary architect of the Social Security Act, the Fair Labor Standards Act (minimum wage, 40-hour week), and the National Labor Relations Act." },
+  { name:"Huey Long", dates:"1893–1935", era:"New Deal", tags:["politician","populist"],
+    desc:"Populist Louisiana governor and senator whose 'Share Our Wealth' program proposed massive redistribution of income from the wealthy; seen as a potential fascist threat to FDR, he was assassinated in 1935." },
+  { name:"Father Charles Coughlin", dates:"1891–1979", era:"New Deal", tags:["religious","populist"],
+    desc:"Radio priest whose weekly broadcasts reached 30 million Americans; began as a New Deal supporter but turned increasingly antisemitic and proto-fascist, eventually silenced by the Church in 1942." },
+  { name:"Dorothea Lange", dates:"1895–1965", era:"New Deal", tags:["photographer","women"],
+    desc:"Documentary photographer whose Dust Bowl and Depression-era images — especially 'Migrant Mother' — defined the visual memory of the Great Depression and shaped public support for New Deal relief programs." },
+  { name:"John Steinbeck", dates:"1902–1968", era:"New Deal", tags:["writer"],
+    desc:"Novelist whose 'The Grapes of Wrath' (1939) humanized the plight of Dust Bowl migrants, winning the Pulitzer Prize and intensifying pressure for farm labor reforms." },
+  { name:"Mary McLeod Bethune", dates:"1875–1955", era:"New Deal", tags:["educator","activist","Black American","women"],
+    desc:"Educator who founded Bethune-Cookman College and served as Director of Negro Affairs in FDR's New Deal — the highest federal position held by a Black woman to that point — ensuring Black Americans had some access to New Deal programs." },
+  { name:"A. Philip Randolph", dates:"1889–1979", era:"New Deal", tags:["labor","activist","Black American"],
+    desc:"Organized the Brotherhood of Sleeping Car Porters, the first major Black union. Threatened a March on Washington in 1941, forcing FDR to desegregate defense industries via Executive Order 8802; later pressured Truman to desegregate the military." },
+  { name:"Jesse Owens", dates:"1913–1980", era:"New Deal", tags:["athlete","Black American"],
+    desc:"Won four gold medals at the 1936 Berlin Olympics, publicly humiliating Hitler's racial ideology on his own soil." },
+  { name:"Joe Louis", dates:"1914–1981", era:"New Deal", tags:["athlete","Black American"],
+    desc:"Heavyweight boxing champion whose 1938 rematch victory over Max Schmeling made him a symbol of American democracy over Nazi Germany." },
+  { name:"Woody Guthrie", dates:"1912–1967", era:"New Deal", tags:["musician","activist"],
+    desc:"Dust Bowl balladeer whose songs like 'This Land Is Your Land' and 'Bound for Glory' gave voice to the Depression's dispossessed and profoundly influenced American folk music and protest traditions." },
+
+  // ── WORLD WAR II ─────────────────────────────────────────────────────────
+  { name:"Harry S. Truman", dates:"1884–1972", era:"WWII", tags:["president"],
+    desc:"Thirty-third President who made the decision to drop atomic bombs on Hiroshima and Nagasaki, ending WWII. Desegregated the military by executive order, launched the Marshall Plan and the Truman Doctrine to contain Soviet expansion, recognized Israel, and led NATO's response to the Korean War — defining the framework of Cold War foreign policy." },
+  { name:"Dwight D. Eisenhower", dates:"1890–1969", era:"WWII", tags:["military","president"],
+    desc:"Supreme Allied Commander who planned and executed the D-Day invasion (June 6, 1944), the largest seaborne invasion in history, and led Allied forces to victory in Europe. As thirty-fourth President, he expanded the interstate highway system and warned in his farewell address against the growing 'military-industrial complex.'" },
+  { name:"Douglas MacArthur", dates:"1880–1964", era:"WWII", tags:["military"],
+    desc:"Commander in the Pacific Theater who island-hopped toward Japan, oversaw Japan's postwar occupation, and led UN forces in Korea until fired by Truman for insubordination in 1951." },
+  { name:"Chester Nimitz", dates:"1885–1966", era:"WWII", tags:["military","naval"],
+    desc:"Commander of the Pacific Fleet who orchestrated the naval campaigns at Midway, Guadalcanal, and island-hopping operations that defeated Japan at sea." },
+  { name:"George Patton", dates:"1885–1945", era:"WWII", tags:["military"],
+    desc:"Aggressive U.S. Army general famous for rapid armored advances in North Africa, Sicily, and Western Europe; his slapping of a shell-shocked soldier nearly ended his career." },
+  { name:"Omar Bradley", dates:"1893–1981", era:"WWII", tags:["military"],
+    desc:"'GI's General' who commanded U.S. ground forces in Normandy and the drive into Germany; later became the first Chairman of the Joint Chiefs of Staff." },
+  { name:"Oveta Culp Hobby", dates:"1905–1995", era:"WWII", tags:["military","women"],
+    desc:"First director of the Women's Army Corps (WACs) during WWII; later became the second woman to serve in a presidential cabinet as Secretary of Health, Education, and Welfare under Eisenhower." },
+  { name:"Henry Kaiser", dates:"1882–1967", era:"WWII", tags:["entrepreneur","industry"],
+    desc:"Industrialist who pioneered mass-production shipbuilding, reducing the time to build a Liberty Ship from a year to four days, enabling the Allied supply chain." },
+  { name:"J. Robert Oppenheimer", dates:"1904–1967", era:"WWII", tags:["scientist"],
+    desc:"Scientific director of the Manhattan Project who led the team that developed the first atomic bombs; later stripped of his security clearance during McCarthyism, becoming a martyr for academic freedom." },
+  { name:"Enrico Fermi", dates:"1901–1954", era:"WWII", tags:["scientist"],
+    desc:"Italian-American physicist who achieved the first controlled nuclear chain reaction (1942) at the University of Chicago, making the atomic bomb feasible." },
+  { name:"Niels Bohr", dates:"1885–1962", era:"WWII", tags:["scientist"],
+    desc:"Danish physicist who contributed key theoretical insights to the Manhattan Project after escaping Nazi-occupied Denmark." },
+  { name:"Fred Korematsu", dates:"1919–2005", era:"WWII", tags:["activist","Japanese American"],
+    desc:"Japanese American who refused to comply with the forced relocation order during WWII and brought Korematsu v. United States to the Supreme Court; his conviction was later vacated, and he became a civil rights icon." },
+  { name:"Daniel Inouye", dates:"1924–2012", era:"WWII", tags:["military","politician","Japanese American"],
+    desc:"Japanese American Medal of Honor recipient in WWII who later became the first Japanese American congressman and longest-serving U.S. Senator in Hawaiian history." },
+  { name:"Dorie Miller", dates:"1919–1943", era:"WWII", tags:["military","Black American"],
+    desc:"Black Navy cook who manned an anti-aircraft gun during the Pearl Harbor attack, shooting down Japanese planes despite having no gunnery training; awarded the Navy Cross." },
+  { name:"Tuskegee Airmen (332nd Fighter Group)", dates:"1941–1945", era:"WWII", tags:["military","Black American"],
+    desc:"First African American military aviators in the U.S. Army Air Corps, who flew over 15,000 missions in WWII, earning distinction for never losing a bomber on escort missions and pioneering military desegregation." },
+  { name:"Rosie the Riveter (Norm Rockwell's model & 'we can do it' archetype)", dates:"1942–1945", era:"WWII", tags:["women","labor","symbol"],
+    desc:"Cultural symbol representing the 6 million women who entered the U.S. industrial workforce during WWII, performing jobs previously reserved for men and transforming gender roles in the workplace." },
+
+  // ── COLD WAR / 1950s ─────────────────────────────────────────────────────
+  { name:"George Marshall", dates:"1880–1959", era:"Cold War", tags:["military","diplomat"],
+    desc:"Army Chief of Staff who organized the WWII military effort, then as Secretary of State proposed the Marshall Plan — $13 billion in European reconstruction aid that prevented communist takeover of Western Europe and won him the Nobel Peace Prize." },
+  { name:"George Kennan", dates:"1904–2005", era:"Cold War", tags:["diplomat","intellectual"],
+    desc:"Diplomat and historian who wrote the 'Long Telegram' and the 'X Article' articulating the strategy of 'containment' — that patient, firm resistance would eventually cause Soviet power to collapse — the foundational doctrine of U.S. Cold War foreign policy." },
+  { name:"Joseph McCarthy", dates:"1908–1957", era:"Cold War", tags:["politician","anti-communist"],
+    desc:"Wisconsin senator whose reckless accusations that the government was riddled with communist spies created a climate of fear and political repression ('McCarthyism') from 1950–54; his downfall came when attorney Joseph Welch asked him on live TV: 'Have you no sense of decency?'" },
+  { name:"Alger Hiss", dates:"1904–1996", era:"Cold War", tags:["spy"],
+    desc:"State Department official convicted of perjury for denying he had passed documents to Soviet spy Whittaker Chambers; the case launched Richard Nixon's career and intensified anticommunist paranoia." },
+  { name:"Julius & Ethel Rosenberg", dates:"1918–1953 / 1915–1953", era:"Cold War", tags:["spy"],
+    desc:"American communists convicted of passing atomic bomb secrets to the Soviet Union; executed in 1953 in the most controversial espionage case of the Cold War, still debated by historians." },
+  { name:"Richard Nixon", dates:"1913–1994", era:"Cold War", tags:["president","politician"],
+    desc:"Made his political name investigating Alger Hiss; as Vice President and later 37th President, opened diplomatic relations with China (1972) and signed détente agreements with the Soviet Union. His administration's involvement in the Watergate break-in and subsequent cover-up forced his resignation in 1974, the only president ever to resign." },
+  { name:"Edward R. Murrow", dates:"1908–1965", era:"Cold War", tags:["journalist"],
+    desc:"CBS broadcaster whose courageous television expose of McCarthyism in 1954 helped turn public opinion against the senator; pioneered broadcast journalism standards." },
+  { name:"Rosa Parks", dates:"1913–2005", era:"Cold War", tags:["activist","Black American","women","civil rights"],
+    desc:"NAACP secretary whose refusal to give up her bus seat in Montgomery, Alabama (December 1, 1955) ignited the 381-day Montgomery Bus Boycott, launching the modern civil rights movement. Often called 'the first lady of civil rights,' her act was part of a carefully planned NAACP strategy." },
+  { name:"Martin Luther King Jr.", dates:"1929–1968", era:"Cold War", tags:["civil rights","leader","Black American"],
+    desc:"Baptist minister who led the civil rights movement from the Montgomery Bus Boycott through his assassination. Organized the SCLC, led the Birmingham campaign (1963), delivered the 'I Have a Dream' speech at the March on Washington, won the Nobel Peace Prize (1964), and championed the Civil Rights Act and Voting Rights Act. His commitment to nonviolent direct action, drawn from Gandhi and Thoreau, transformed American democracy. Assassinated in Memphis on April 4, 1968." },
+  { name:"Thurgood Marshall", dates:"1908–1993", era:"Cold War", tags:["lawyer","civil rights","Black American"],
+    desc:"NAACP attorney who argued and won Brown v. Board of Education (1954), overturning 'separate but equal.' Later appointed by LBJ as the first Black Supreme Court Justice (1967), serving until 1991." },
+  { name:"John Lewis", dates:"1940–2020", era:"Cold War", tags:["civil rights","politician","Black American"],
+    desc:"SNCC chairman who was beaten bloody on Bloody Sunday at Selma's Edmund Pettus Bridge (1965) demanding voting rights; later served for over 30 years in Congress, becoming the moral conscience of the House." },
+  { name:"Fannie Lou Hamer", dates:"1917–1977", era:"Cold War", tags:["civil rights","Black American","women"],
+    desc:"Mississippi sharecropper who became a towering voting rights activist after being evicted for registering to vote; her televised testimony before the 1964 Democratic National Convention about beatings she endured electrified the nation." },
+  { name:"Medgar Evers", dates:"1925–1963", era:"Cold War", tags:["civil rights","Black American"],
+    desc:"NAACP field secretary in Mississippi who organized voter registration drives and was assassinated in his driveway in 1963; his killer was not convicted for 31 years." },
+  { name:"Malcolm X (El-Hajj Malik El-Shabazz)", dates:"1925–1965", era:"Cold War", tags:["civil rights","Black American","Black nationalism"],
+    desc:"Nation of Islam minister and Black nationalist who challenged King's nonviolent integrationism, preaching Black pride, self-defense, and separatism. After a pilgrimage to Mecca transformed his views toward universalism, he was assassinated in 1965. His 'Autobiography' (written with Alex Haley) became a foundational text of Black consciousness." },
+  { name:"Stokely Carmichael (Kwame Ture)", dates:"1941–1998", era:"Cold War", tags:["civil rights","Black Power","Black American"],
+    desc:"SNCC chairman who popularized the term 'Black Power' in 1966, shifting the civil rights movement toward Black nationalism and away from integration; later joined the Black Panther Party." },
+  { name:"Huey Newton", dates:"1942–1989", era:"Cold War", tags:["activist","Black Power","Black American"],
+    desc:"Co-founded the Black Panther Party for Self-Defense in 1966, which combined armed self-defense, community service programs, and Marxist ideology into a powerful Black radical movement." },
+  { name:"Bobby Seale", dates:"1936–", era:"Cold War", tags:["activist","Black Power","Black American"],
+    desc:"Co-founded the Black Panther Party with Huey Newton; one of the Chicago Eight defendants charged with conspiracy for the 1968 Democratic Convention protests." },
+  { name:"Cesar Chavez", dates:"1927–1993", era:"Cold War", tags:["labor","activist","Latino"],
+    desc:"Mexican American labor organizer who co-founded the United Farm Workers (UFW) and led nonviolent strikes and nationwide grape and lettuce boycotts to win the first collective bargaining agreements for agricultural workers." },
+  { name:"Dolores Huerta", dates:"1930–", era:"Cold War", tags:["labor","activist","women","Latino"],
+    desc:"Co-founded the United Farm Workers with Cesar Chavez and negotiated key labor contracts; coined 'Sí, se puede' ('Yes, we can') and became a major figure in both the labor and women's movements." },
+  { name:"Betty Friedan", dates:"1921–2006", era:"Cold War", tags:["feminist","women"],
+    desc:"Author of 'The Feminine Mystique' (1963), which identified the 'problem that has no name' — suburban women's unfulfillment — catalyzing second-wave feminism. Co-founded the National Organization for Women (NOW) in 1966." },
+  { name:"Gloria Steinem", dates:"1934–", era:"Cold War", tags:["feminist","journalist","women"],
+    desc:"Journalist and activist who co-founded Ms. magazine and became the most visible face of second-wave feminism, championing the Equal Rights Amendment and reproductive rights." },
+  { name:"John F. Kennedy", dates:"1917–1963", era:"Cold War", tags:["president"],
+    desc:"Thirty-fifth President whose brief 'Camelot' administration navigated the Cuban Missile Crisis (1962) through tense back-channel negotiation, avoiding nuclear war in the defining moment of the Cold War. Established the Peace Corps, advanced civil rights with federal force at Ole Miss and Alabama, and set the moon mission goal. Assassinated in Dallas on November 22, 1963." },
+  { name:"Robert F. Kennedy", dates:"1925–1968", era:"Cold War", tags:["politician","civil rights"],
+    desc:"Attorney General who enforced civil rights law aggressively, then as senator became a leading antiwar voice and presidential candidate; assassinated by Sirhan Sirhan in Los Angeles hours after winning the California primary." },
+  { name:"Lyndon B. Johnson", dates:"1908–1973", era:"Cold War", tags:["president"],
+    desc:"Thirty-sixth President whose 'Great Society' produced more landmark domestic legislation than any president since FDR: Civil Rights Act (1964), Voting Rights Act (1965), Medicare, Medicaid, the Immigration Act, and the Elementary and Secondary Education Act. However, his escalation of the Vietnam War — eventually committing 500,000 troops — destroyed his presidency and defined the era's polarization." },
+  { name:"Barry Goldwater", dates:"1909–1998", era:"Cold War", tags:["politician","conservative"],
+    desc:"Arizona senator whose 1964 presidential campaign, though a landslide loss, launched modern conservatism by popularizing small government, anti-communism, and opposition to the Civil Rights Act as constitutional overreach; Reagan called Goldwater the movement's intellectual father." },
+  { name:"Lee Harvey Oswald", dates:"1939–1963", era:"Cold War", tags:["assassin"],
+    desc:"Former Marine and Marxist who shot President Kennedy in Dallas on November 22, 1963; killed by Jack Ruby two days later before trial, ensuring perpetual conspiracy theories." },
+  { name:"George Wallace", dates:"1919–1998", era:"Cold War", tags:["politician","segregationist"],
+    desc:"Alabama governor who declared 'segregation now, segregation tomorrow, segregation forever' and physically blocked Black students from the University of Alabama; his third-party presidential campaigns in 1968 and 1972 attracted white working-class voters and helped reshape the Democratic coalition." },
+  { name:"Orval Faubus", dates:"1910–1994", era:"Cold War", tags:["politician","segregationist"],
+    desc:"Arkansas governor who used the National Guard to prevent Black students from integrating Little Rock's Central High School in 1957, forcing Eisenhower to send in the 101st Airborne." },
+  { name:"Earl Warren", dates:"1891–1974", era:"Cold War", tags:["judiciary"],
+    desc:"Chief Justice whose Warren Court issued landmark rulings: Brown v. Board (desegregation), Engel v. Vitale (school prayer), Miranda v. Arizona (suspects' rights), and Baker v. Carr (one person one vote); transformed constitutional law more than any court since Marshall." },
+  { name:"Rachel Carson", dates:"1907–1964", era:"Cold War", tags:["scientist","environmentalist","women"],
+    desc:"Marine biologist whose 'Silent Spring' (1962) documented the devastating ecological effects of pesticides — particularly DDT — on birds and ecosystems, igniting the modern environmental movement and leading to the creation of the EPA." },
+  { name:"Betty Goldstein Naomi Wolf", dates:"—", era:"Cold War", tags:["feminist"],
+    desc:"(See Betty Friedan above.)" },
+  { name:"Allen Ginsberg", dates:"1926–1997", era:"Cold War", tags:["poet","Beat Generation"],
+    desc:"Beat Generation poet whose 'Howl' (1956) challenged Cold War conformity and censorship; a leading voice for counterculture, antiwar, and gay liberation movements." },
+  { name:"Jack Kerouac", dates:"1922–1969", era:"Cold War", tags:["writer","Beat Generation"],
+    desc:"Beat Generation novelist whose 'On the Road' (1957) defined the countercultural impulse of freedom, spontaneity, and rejection of suburban conformity." },
+
+  // ── VIETNAM / 1960s–70s ───────────────────────────────────────────────────
+  { name:"Robert McNamara", dates:"1916–2009", era:"Vietnam", tags:["government","military"],
+    desc:"Secretary of Defense who engineered the massive U.S. escalation in Vietnam using systems analysis and body counts as metrics, later acknowledging in his memoir 'In Retrospect' that he knew early on the war was unwinnable." },
+  { name:"Daniel Ellsberg", dates:"1931–2023", era:"Vietnam", tags:["whistleblower","activist"],
+    desc:"Former Defense Department analyst who leaked the Pentagon Papers in 1971 — classified documents showing the government had systematically deceived the public about Vietnam — a watershed moment for press freedom and government accountability." },
+  { name:"Ho Chi Minh", dates:"1890–1969", era:"Vietnam", tags:["Vietnamese","leader"],
+    desc:"Communist leader of North Vietnam and national independence hero whose Viet Minh defeated the French at Dien Bien Phu and directed the war against the U.S.-backed South, dying before the war ended." },
+  { name:"William Westmoreland", dates:"1914–2005", era:"Vietnam", tags:["military"],
+    desc:"U.S. commander in Vietnam who championed the attrition strategy of body counts and search-and-destroy missions; the Tet Offensive devastated his credibility." },
+  { name:"Tom Hayden", dates:"1939–2016", era:"Vietnam", tags:["activist"],
+    desc:"Wrote the Port Huron Statement (1962), founding document of Students for a Democratic Society (SDS) and the New Left; later a Chicago Eight defendant." },
+  { name:"Abbie Hoffman", dates:"1936–1989", era:"Vietnam", tags:["activist"],
+    desc:"Countercultural activist and co-founder of the Youth International Party (Yippies) who used guerrilla theater tactics to protest Vietnam; Chicago Eight defendant." },
+  { name:"Jane Fonda", dates:"1937–", era:"Vietnam", tags:["activist","celebrity"],
+    desc:"Actress whose 1972 visit to Hanoi and photographs on a North Vietnamese anti-aircraft gun earned her the nickname 'Hanoi Jane' and made her one of the most controversial antiwar figures of the era." },
+  { name:"Bob Dylan", dates:"1941–", era:"Vietnam", tags:["musician","activist"],
+    desc:"Singer-songwriter whose early folk protest songs — 'Blowin' in the Wind,' 'The Times They Are A-Changin'' — defined the civil rights and antiwar movements' musical voice before pivoting to rock; awarded the Nobel Prize in Literature (2016)." },
+  { name:"Walter Cronkite", dates:"1916–2009", era:"Vietnam", tags:["journalist"],
+    desc:"CBS News anchor whose February 1968 editorial calling Vietnam a 'stalemate' caused LBJ to reportedly say 'If I've lost Cronkite, I've lost Middle America.'" },
+
+  // ── MODERN ERA ────────────────────────────────────────────────────────────
+  { name:"Ronald Reagan", dates:"1911–2004", era:"Modern", tags:["president","conservative"],
+    desc:"Fortieth President who transformed American politics with his optimistic conservatism — massive tax cuts, deregulation, military buildup, and anti-Soviet rhetoric that he credited with winning the Cold War. His 'Reagan Revolution' shifted the political center rightward and his economic policy (Reaganomics/supply-side economics) remains contested. The Iran-Contra scandal was the gravest crisis of his second term." },
+  { name:"Jimmy Carter", dates:"1924–2024", era:"Modern", tags:["president"],
+    desc:"Thirty-ninth President who brokered the Camp David Accords between Israel and Egypt (1978) — his greatest triumph — but whose presidency was defined by the Iran hostage crisis and oil shock stagflation; later won the Nobel Peace Prize for post-presidential humanitarian work." },
+  { name:"George H.W. Bush", dates:"1924–2018", era:"Modern", tags:["president"],
+    desc:"Forty-first President who built the international coalition that expelled Saddam Hussein from Kuwait in the Gulf War (1991) with minimal casualties; lost re-election to Clinton amid economic recession." },
+  { name:"Bill Clinton", dates:"1946–", era:"Modern", tags:["president"],
+    desc:"Forty-second President who presided over the longest peacetime economic expansion in U.S. history, signed NAFTA and welfare reform, but was impeached by the House for perjury related to the Monica Lewinsky affair, surviving removal by the Senate." },
+  { name:"George W. Bush", dates:"1946–", era:"Modern", tags:["president"],
+    desc:"Forty-third President who responded to the September 11, 2001 attacks by launching the War in Afghanistan and, controversially, the Iraq War based on intelligence about weapons of mass destruction that proved false; his administration also dealt with Hurricane Katrina's catastrophic aftermath." },
+  { name:"Barack Obama", dates:"1961–", era:"Modern", tags:["president","Black American"],
+    desc:"Forty-fourth President and first Black American to hold the office; passed the Affordable Care Act (2010), stimulus legislation that ended the Great Recession, ended 'Don't Ask Don't Tell,' oversaw the killing of Osama bin Laden (2011), and negotiated the Iran nuclear deal and Paris Climate Agreement; won the Nobel Peace Prize in 2009." },
+  { name:"Sandra Day O'Connor", dates:"1930–2023", era:"Modern", tags:["judiciary","women"],
+    desc:"First woman appointed to the Supreme Court (by Reagan, 1981); served as a pivotal swing vote for 24 years on cases involving abortion, affirmative action, and voting rights." },
+  { name:"Ruth Bader Ginsburg", dates:"1933–2020", era:"Modern", tags:["judiciary","women"],
+    desc:"Second woman on the Supreme Court, appointed by Clinton in 1993; as a lawyer had argued landmark sex discrimination cases before the Court in the 1970s; became a liberal icon nicknamed 'the Notorious RBG' for her sharp dissents in her later years." },
+  { name:"Harvey Milk", dates:"1930–1978", era:"Modern", tags:["LGBTQ+","activist","politician"],
+    desc:"First openly gay elected official in California history, serving on San Francisco's Board of Supervisors; assassinated in 1978, his martyrdom accelerated the LGBTQ+ rights movement." },
+  { name:"Cesar Chavez", dates:"1927–1993", era:"Modern", tags:["labor","Latino"],
+    desc:"(See Cold War section.)" },
+  { name:"Jesse Jackson", dates:"1941–", era:"Modern", tags:["civil rights","politician","Black American"],
+    desc:"Baptist minister and civil rights leader who ran for president in 1984 and 1988, winning several states and becoming the first Black American to mount a serious presidential campaign; founded the Rainbow Coalition." },
+  { name:"Phyllis Schlafly", dates:"1924–2016", era:"Modern", tags:["conservative","activist","women"],
+    desc:"Conservative activist whose STOP ERA campaign successfully blocked ratification of the Equal Rights Amendment in the 1970s; organized the Religious Right's entry into Republican politics and helped shape the modern conservative movement." },
+  { name:"Ralph Nader", dates:"1934–", era:"Modern", tags:["consumer rights","activist"],
+    desc:"Consumer advocate whose 'Unsafe at Any Speed' (1965) exposed auto safety failures, leading to seatbelt laws; later ran for president multiple times as a Green Party candidate, arguably costing Al Gore the 2000 election." },
+  { name:"Gloria Steinem", dates:"1934–", era:"Modern", tags:["feminist","journalist","women"],
+    desc:"(See Cold War section.)" },
+  { name:"Martin Luther King III", dates:"1957–", era:"Modern", tags:["civil rights","Black American"],
+    desc:"Civil rights activist and son of MLK who has continued his father's work on voting rights and racial justice." },
+  { name:"Coretta Scott King", dates:"1927–2006", era:"Modern", tags:["civil rights","women","Black American"],
+    desc:"Civil rights leader and wife of MLK who continued his work after his assassination, campaigning for the MLK federal holiday and expanding the vision of civil rights to include LGBTQ+ rights and economic justice." },
+  { name:"Colin Powell", dates:"1937–2021", era:"Modern", tags:["military","government","Black American"],
+    desc:"First Black National Security Advisor, Chairman of the Joint Chiefs during the Gulf War, and first Black Secretary of State; his UN testimony on Iraqi WMDs helped build the case for the Iraq War, which he later called a 'blot' on his record." },
+  { name:"Condoleezza Rice", dates:"1954–", era:"Modern", tags:["government","Black American","women"],
+    desc:"First Black woman to serve as National Security Advisor and later as Secretary of State under George W. Bush." },
+  { name:"Anita Hill", dates:"1956–", era:"Modern", tags:["activist","women"],
+    desc:"Law professor whose 1991 Senate testimony alleging sexual harassment by Clarence Thomas during his Supreme Court confirmation hearings galvanized the women's rights movement and the 'Year of the Woman' election in 1992." },
+  { name:"Tim Berners-Lee", dates:"1955–", era:"Modern", tags:["inventor","scientist"],
+    desc:"British inventor who created the World Wide Web in 1989–91 while working at CERN, transforming global communication, commerce, and culture — with enormous impact on American economic and social life." },
+  { name:"Steve Jobs", dates:"1955–2011", era:"Modern", tags:["entrepreneur","inventor"],
+    desc:"Co-founded Apple Computer, revolutionized personal computing with the Macintosh, transformed music distribution with the iPod and iTunes, and launched the smartphone era with the iPhone — making Apple the world's most valuable company." },
+  { name:"Bill Gates", dates:"1955–", era:"Modern", tags:["entrepreneur"],
+    desc:"Co-founded Microsoft and made the PC operating system ubiquitous through licensing deals, becoming the world's wealthiest person; the Justice Department's antitrust case against Microsoft became a defining tech regulation moment." },
+];
+
+// Build era list in order
+const eraOrder = ["Colonial","Revolution","Early Republic","Antebellum","Civil War","Reconstruction","Gilded Age","Progressive Era","WWI","1920s","New Deal","WWII","Cold War","Vietnam","Modern"];
+
+function buildApp() {
+  const main = document.getElementById('main');
+  const eraFiltersDiv = document.getElementById('era-filters');
+  const countEl = document.getElementById('count');
+  const searchEl = document.getElementById('search');
+
+  // All filter button
+  let activeEra = 'ALL';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'era-btn active';
+  allBtn.textContent = 'ALL';
+  allBtn.dataset.era = 'ALL';
+  eraFiltersDiv.appendChild(allBtn);
+
+  eraOrder.forEach(era => {
+    const btn = document.createElement('button');
+    btn.className = 'era-btn';
+    btn.textContent = era;
+    btn.dataset.era = era;
+    eraFiltersDiv.appendChild(btn);
+  });
+
+  eraFiltersDiv.addEventListener('click', e => {
+    if (!e.target.classList.contains('era-btn')) return;
+    document.querySelectorAll('.era-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    activeEra = e.target.dataset.era;
+    render();
+  });
+
+  searchEl.addEventListener('input', render);
+
+  function render() {
+    main.innerHTML = '';
+    const q = searchEl.value.toLowerCase();
+    let total = 0;
+
+    eraOrder.forEach(era => {
+      if (activeEra !== 'ALL' && activeEra !== era) return;
+      const items = data.filter(p => {
+        if (p.era !== era) return false;
+        if (!q) return true;
+        return p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q));
+      });
+      if (!items.length) return;
+      total += items.length;
+
+      const section = document.createElement('div');
+      section.className = 'era-section';
+      section.innerHTML = `<div class="era-heading">${era.toUpperCase()}</div>`;
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      items.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-name">${p.name}</div>
+          <div class="card-dates">${p.dates}</div>
+          <div class="card-desc">${p.desc}</div>
+          <div>${p.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+        `;
+        grid.appendChild(card);
+      });
+      section.appendChild(grid);
+      main.appendChild(section);
+    });
+
+    countEl.textContent = `${total} people`;
+    if (!total) main.innerHTML = '<div class="no-results">// NO RESULTS FOUND</div>';
+  }
+
+  render();
+}
+
+buildApp();
+</script>
+
+</body>
+</html>
