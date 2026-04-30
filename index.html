@@ -220,7 +220,7 @@
     flex-wrap: wrap;
     align-items: center;
   }
-  #event-search, #quizizz-mode {
+  #event-search, #quizizz-mode, #quizizz-era {
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
@@ -231,7 +231,7 @@
     outline: none;
     transition: border-color 0.2s;
   }
-  #event-search:focus, #quizizz-mode:focus { border-color: var(--events-accent); }
+  #event-search:focus, #quizizz-mode:focus, #quizizz-era:focus { border-color: var(--events-accent); }
   #event-search::placeholder { color: var(--muted); }
   .type-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; }
   .type-btn {
@@ -441,6 +441,62 @@
     letter-spacing: 0.08em;
     margin-bottom: 0.45rem;
   }
+  .quizizz-timeline-bank,
+  .quizizz-timeline-dropzone {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .quizizz-timeline-bank {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .quizizz-drop-slot {
+    border: 1px dashed var(--events-accent2);
+    background: rgba(127, 181, 212, 0.05);
+    padding: 0.75rem;
+    min-height: 84px;
+  }
+  .quizizz-drop-slot-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--events-accent2);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+  .quizizz-drag-card {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    padding: 0.8rem;
+    cursor: grab;
+    color: var(--text);
+  }
+  .quizizz-drag-card:active {
+    cursor: grabbing;
+  }
+  .quizizz-drag-card strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.98rem;
+  }
+  .quizizz-drag-year {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--events-accent);
+    letter-spacing: 0.08em;
+  }
+  .quizizz-drop-slot.over {
+    border-color: var(--events-accent);
+    background: rgba(200, 74, 74, 0.08);
+  }
+  .quizizz-drop-slot.correct {
+    border-color: #4ea56d;
+    background: rgba(78, 165, 109, 0.10);
+  }
+  .quizizz-drop-slot.wrong {
+    border-color: #c84a4a;
+    background: rgba(200, 74, 74, 0.10);
+  }
 </style>
 </head>
 <body>
@@ -485,10 +541,28 @@
     <div class="events-controls">
       <select id="quizizz-mode">
         <option value="mixed">MIXED</option>
+        <option value="timeline">TIMELINE DRAG</option>
         <option value="chronology">CHRONOLOGY</option>
         <option value="leaders">LEADERS</option>
         <option value="causes">ACTS / CAUSES</option>
         <option value="identify">IDENTIFY</option>
+      </select>
+      <select id="quizizz-era">
+        <option value="Colonial">COLONIAL</option>
+        <option value="Revolution">REVOLUTION</option>
+        <option value="Early Republic">EARLY REPUBLIC</option>
+        <option value="Antebellum">ANTEBELLUM</option>
+        <option value="Civil War">CIVIL WAR</option>
+        <option value="Reconstruction">RECONSTRUCTION</option>
+        <option value="Gilded Age">GILDED AGE</option>
+        <option value="Progressive Era">PROGRESSIVE ERA</option>
+        <option value="WWI">WWI</option>
+        <option value="1920s">1920S</option>
+        <option value="New Deal">NEW DEAL</option>
+        <option value="WWII">WWII</option>
+        <option value="Cold War">COLD WAR</option>
+        <option value="Vietnam">VIETNAM</option>
+        <option value="Modern">MODERN</option>
       </select>
       <button class="type-btn active" id="quizizz-new">NEW QUESTION</button>
       <span id="quizizz-score"></span>
@@ -1043,6 +1117,7 @@ const quizizzState = {
   total: 0,
   current: null
 };
+let draggedTimelineId = null;
 
 function yearValue(label) {
   const m = String(label).match(/\d{3,4}/);
@@ -1060,6 +1135,10 @@ function shuffle(arr) {
 
 function pickMany(arr, n) {
   return shuffle(arr).slice(0, n);
+}
+
+function makeTimelineId(item) {
+  return `${item.name}__${item.year}`;
 }
 
 function buildLeaderQuestion() {
@@ -1162,8 +1241,38 @@ function buildChronologyQuestion() {
   };
 }
 
+function buildTimelineDragQuestion() {
+  const era = document.getElementById("quizizz-era").value;
+  const pool = eventsData.filter(ev => ev.era === era && yearValue(ev.year) < 9999);
+
+  let sample = [];
+  while (sample.length < 4) {
+    sample = pickMany(pool, 4);
+    if (sample.length < 4) break;
+    const years = sample.map(s => yearValue(s.year));
+    if (new Set(years).size < 4) sample = [];
+  }
+
+  const sorted = [...sample].sort((a, b) => yearValue(a.year) - yearValue(b.year));
+  const shuffled = shuffle(sample).map(item => ({
+    ...item,
+    dragId: makeTimelineId(item)
+  }));
+
+  return {
+    kind: "timeline-drag",
+    label: "TIMELINE DRAG",
+    prompt: `Drag these ${era} events into chronological order.`,
+    items: shuffled,
+    answer: sorted.map(item => makeTimelineId(item)),
+    explanation: sorted.map(x => `${x.year} — ${x.name}`).join("<br>"),
+    meta: [era, "drag and drop", "earliest → latest"]
+  };
+}
+
 function buildMixedQuestion() {
   const builders = [
+    buildTimelineDragQuestion,
     buildChronologyQuestion,
     buildLeaderQuestion,
     buildCauseQuestion,
@@ -1175,7 +1284,8 @@ function buildMixedQuestion() {
 function nextQuizizzQuestion() {
   const mode = document.getElementById("quizizz-mode").value;
   quizizzState.mode = mode;
-  if (mode === "chronology") quizizzState.current = buildChronologyQuestion();
+  if (mode === "timeline") quizizzState.current = buildTimelineDragQuestion();
+  else if (mode === "chronology") quizizzState.current = buildChronologyQuestion();
   else if (mode === "leaders") quizizzState.current = buildLeaderQuestion();
   else if (mode === "causes") quizizzState.current = buildCauseQuestion();
   else if (mode === "identify") quizizzState.current = buildIdentifyQuestion();
@@ -1191,6 +1301,11 @@ function renderQuizizzQuestion() {
   const main = document.getElementById("quizizz-main");
   const q = quizizzState.current;
   updateQuizizzScore();
+
+  if (q.kind === "timeline-drag") {
+    renderTimelineDragQuestion(q);
+    return;
+  }
 
   if (q.kind === "chronology") {
     main.innerHTML = `
@@ -1280,9 +1395,120 @@ function renderQuizizzQuestion() {
   });
 }
 
+function renderTimelineDragQuestion(q) {
+  const main = document.getElementById("quizizz-main");
+
+  main.innerHTML = `
+    <div class="quizizz-card">
+      <div class="quizizz-label">${q.label}</div>
+      <div class="quizizz-question">${q.prompt}</div>
+      <div class="quizizz-meta">${q.meta.map(m => `<span class="quizizz-pill">${m}</span>`).join("")}</div>
+      <div class="quizizz-sub">Drag from the bank into the 4 timeline slots below.</div>
+
+      <div class="quizizz-timeline-bank" id="timeline-bank">
+        ${q.items.map(item => `
+          <div class="quizizz-drag-card" draggable="true" data-drag-id="${item.dragId}">
+            <strong>${item.name}</strong>
+            <div class="quizizz-drag-year">${item.year}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="quizizz-timeline-dropzone">
+        ${[0,1,2,3].map(i => `
+          <div class="quizizz-drop-slot" data-slot-index="${i}">
+            <div class="quizizz-drop-slot-label">POSITION ${i + 1}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <button class="quizizz-next" id="grade-timeline">GRADE TIMELINE</button>
+      <div id="quizizz-feedback"></div>
+    </div>
+  `;
+
+  const allSlots = main.querySelectorAll(".quizizz-drop-slot");
+  const bank = document.getElementById("timeline-bank");
+
+  main.querySelectorAll(".quizizz-drag-card").forEach(card => {
+    card.addEventListener("dragstart", () => {
+      draggedTimelineId = card.dataset.dragId;
+    });
+  });
+
+  bank.addEventListener("dragover", e => e.preventDefault());
+  bank.addEventListener("drop", e => {
+    e.preventDefault();
+    if (!draggedTimelineId) return;
+    const card = main.querySelector(`[data-drag-id="${CSS.escape(draggedTimelineId)}"]`);
+    if (card) bank.appendChild(card);
+    draggedTimelineId = null;
+  });
+
+  allSlots.forEach(slot => {
+    slot.addEventListener("dragover", e => {
+      e.preventDefault();
+      slot.classList.add("over");
+    });
+    slot.addEventListener("dragleave", () => {
+      slot.classList.remove("over");
+    });
+    slot.addEventListener("drop", e => {
+      e.preventDefault();
+      slot.classList.remove("over");
+      if (!draggedTimelineId) return;
+
+      const card = main.querySelector(`[data-drag-id="${CSS.escape(draggedTimelineId)}"]`);
+      if (!card) return;
+
+      const existingCard = slot.querySelector(".quizizz-drag-card");
+      if (existingCard) bank.appendChild(existingCard);
+      slot.appendChild(card);
+      draggedTimelineId = null;
+    });
+  });
+
+  document.getElementById("grade-timeline").onclick = () => {
+    const placed = [...allSlots].map(slot => {
+      const card = slot.querySelector(".quizizz-drag-card");
+      return card ? card.dataset.dragId : "";
+    });
+
+    if (placed.some(v => !v)) {
+      document.getElementById("quizizz-feedback").innerHTML =
+        `<div class="quizizz-feedback">Place all 4 cards before grading.</div>`;
+      return;
+    }
+
+    const correct = placed.every((id, i) => id === q.answer[i]);
+    quizizzState.total += 1;
+    if (correct) quizizzState.score += 1;
+    updateQuizizzScore();
+
+    allSlots.forEach((slot, i) => {
+      slot.classList.remove("correct", "wrong");
+      slot.classList.add(placed[i] === q.answer[i] ? "correct" : "wrong");
+    });
+
+    document.getElementById("quizizz-feedback").innerHTML = `
+      <div class="quizizz-feedback">
+        <strong>${correct ? "Correct." : "Not quite."}</strong><br><br>
+        ${q.explanation}
+      </div>
+      <button class="quizizz-next" id="next-q">NEXT QUESTION</button>
+    `;
+    document.getElementById("next-q").onclick = nextQuizizzQuestion;
+  };
+}
+
 function buildQuizizzApp() {
   document.getElementById("quizizz-new").addEventListener("click", nextQuizizzQuestion);
   document.getElementById("quizizz-mode").addEventListener("change", nextQuizizzQuestion);
+  document.getElementById("quizizz-era").addEventListener("change", () => {
+    if (document.getElementById("quizizz-mode").value === "timeline") {
+      nextQuizizzQuestion();
+    }
+  });
   nextQuizizzQuestion();
 }
 
