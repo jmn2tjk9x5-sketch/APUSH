@@ -555,7 +555,8 @@
   .master-scroll::before {
     content: "";
     position: absolute;
-    left: 22px;
+    left: 50%;
+    transform: translateX(-50%);
     top: 0;
     bottom: 0;
     width: 3px;
@@ -564,7 +565,7 @@
   }
   .master-era-section {
     position: relative;
-    padding-left: 56px;
+    padding-top: 0.25rem;
     margin-bottom: 2.5rem;
   }
   .master-era-bracket {
@@ -572,14 +573,16 @@
     top: 0;
     z-index: 5;
     background: rgba(14, 12, 9, 0.96);
-    padding-bottom: 0.75rem;
+    width: calc(50% - 34px);
+    margin-left: calc(50% + 34px);
+    padding: 0 0 0.75rem 1rem;
   }
   .master-era-bracket::before {
     content: "";
     position: absolute;
-    left: -34px;
-    top: 16px;
-    width: 20px;
+    left: -24px;
+    top: 14px;
+    width: 18px;
     height: calc(100% - 16px);
     border-left: 2px solid var(--accent3);
     border-top: 2px solid var(--accent3);
@@ -607,18 +610,39 @@
     position: relative;
     border: 1px solid var(--border);
     background: var(--surface);
-    margin-left: 0.25rem;
+    width: calc(50% - 34px);
+    margin-left: calc(50% + 34px);
   }
   .master-item::before {
     content: "";
     position: absolute;
-    left: -42px;
+    left: -40px;
     top: 18px;
     width: 12px;
     height: 12px;
     border-radius: 999px;
     background: var(--accent3);
     box-shadow: 0 0 0 4px rgba(157, 126, 200, 0.12);
+  }
+  .master-item::after {
+    content: "";
+    position: absolute;
+    left: -28px;
+    top: 23px;
+    width: 28px;
+    height: 1px;
+    background: rgba(157, 126, 200, 0.55);
+  }
+  .master-item.left {
+    margin-left: 0;
+  }
+  .master-item.left::before {
+    left: auto;
+    right: -40px;
+  }
+  .master-item.left::after {
+    left: auto;
+    right: -28px;
   }
   .master-summary {
     list-style: none;
@@ -633,7 +657,7 @@
     gap: 0.7rem;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.15rem;
   }
   .master-year {
     font-family: 'IBM Plex Mono', monospace;
@@ -654,11 +678,6 @@
     font-size: 1rem;
     color: var(--text);
     line-height: 1.3;
-  }
-  .master-preview {
-    color: #c4b9ab;
-    font-size: 13px;
-    margin-top: 0.35rem;
   }
   .master-detail {
     border-top: 1px solid var(--border);
@@ -685,6 +704,32 @@
     border: 1px solid var(--border);
     padding: 1px 5px;
     text-transform: uppercase;
+  }
+  @media (max-width: 900px) {
+    .master-scroll::before {
+      left: 18px;
+      transform: none;
+    }
+    .master-era-bracket,
+    .master-item,
+    .master-item.left {
+      width: auto;
+      margin-left: 52px;
+      padding-left: 0;
+    }
+    .master-era-bracket::before {
+      left: -28px;
+    }
+    .master-item::before,
+    .master-item.left::before {
+      left: -40px;
+      right: auto;
+    }
+    .master-item::after,
+    .master-item.left::after {
+      left: -28px;
+      right: auto;
+    }
   }
 </style>
 </head>
@@ -1795,15 +1840,14 @@ function buildMasterTimelineApp() {
           <div class="master-era-note">${eraConceptNotes[era] || ""}</div>
         </div>
         <div class="master-items">
-          ${items.map(item => `
-            <details class="master-item">
+          ${items.map((item, index) => `
+            <details class="master-item ${index % 2 === 0 ? 'left' : 'right'}">
               <summary class="master-summary">
                 <div class="master-topline">
                   <span class="master-year">${item.yearLabel}</span>
                   <span class="master-type">${item.type}</span>
                 </div>
                 <div class="master-name">${item.name}</div>
-                <div class="master-preview">${item.preview}</div>
               </summary>
               <div class="master-detail">
                 <p>${item.detail}</p>
